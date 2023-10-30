@@ -21,7 +21,7 @@ plugins {
 }
 
 if (rootProject.name == "lattice") {
-  apply(plugin = "com.rickbusarow.lattice.jvm-module")
+  apply(plugin = "com.rickbusarow.lattice.gradle-plugin")
 }
 
 gradlePlugin {
@@ -30,9 +30,13 @@ gradlePlugin {
       id = "com.rickbusarow.lattice.composite"
       implementationClass = "com.rickbusarow.lattice.CompositePlugin"
     }
+    create("gradle-plugin") {
+      id = "com.rickbusarow.antipasto.gradle-plugin"
+      implementationClass = "com.rickbusarow.antipasto.KotlinJvmModulePlugin"
+    }
     create("jvm") {
       id = "com.rickbusarow.lattice.jvm-module"
-      implementationClass = "com.rickbusarow.lattice.KotlinJvmModulePlugin"
+      implementationClass = "com.rickbusarow.lattice.GradlePluginModulePlugin"
     }
     create("kmp") {
       id = "com.rickbusarow.lattice.kmp-module"
@@ -41,6 +45,7 @@ gradlePlugin {
     create("root") {
       id = "com.rickbusarow.lattice.root"
       implementationClass = "com.rickbusarow.lattice.RootPlugin"
+      val pd = this
     }
 
     create("curator") {

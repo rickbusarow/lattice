@@ -30,7 +30,7 @@ import javax.inject.Inject
 @Suppress("UndocumentedPublicClass")
 public abstract class RootExtension @Inject constructor(
   private val objects: ObjectFactory
-) : CompositeHandler by objects<DefaultCompositeHandler>(),
+) : CompositeHandler by objects.newInstance<DefaultCompositeHandler>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KspExtension,
@@ -39,7 +39,20 @@ public abstract class RootExtension @Inject constructor(
   SerializationExtension
 
 @Suppress("UndocumentedPublicClass")
-public abstract class KotlinJvmModuleExtension :
+public abstract class GradlePluginModuleExtension @Inject constructor(
+  private val objects: ObjectFactory
+) : AutoServiceExtension,
+  BuildLogicShadowExtensionHook,
+  KotlinJvmExtension,
+  KspExtension,
+  PokoExtension,
+  PublishingExtension,
+  SerializationExtension
+
+@Suppress("UndocumentedPublicClass")
+public abstract class KotlinJvmModuleExtension @Inject constructor(
+  private val objects: ObjectFactory
+) :
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,
@@ -49,7 +62,9 @@ public abstract class KotlinJvmModuleExtension :
   SerializationExtension
 
 @Suppress("UndocumentedPublicClass")
-public abstract class KotlinMultiplatformModuleExtension :
+public abstract class KotlinMultiplatformModuleExtension @Inject constructor(
+  private val objects: ObjectFactory
+) :
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinExtension,
@@ -60,4 +75,4 @@ public abstract class KotlinMultiplatformModuleExtension :
   SerializationExtension
 
 @Suppress("UnusedPrivateMember") // no, it's used as a delegate
-private inline operator fun <reified T : Any> ObjectFactory.invoke(): T = newInstance(T::class.java)
+private inline fun <reified T : Any> ObjectFactory.newInstance(): T = newInstance(T::class.java)

@@ -41,11 +41,23 @@ public abstract class BaseModulePlugin : Plugin<Project> {
   }
 }
 
+/** Applies conventions to any kotlin-jvm and `java-gradle-plugin` project. */
+public abstract class GradlePluginModulePlugin : BaseModulePlugin() {
+  override fun apply(target: Project) {
+
+    target.extensions.create("antipasto", GradlePluginModuleExtension::class.java)
+
+    target.plugins.apply(GradlePluginModulePlugin::class.java)
+
+    super.apply(target)
+  }
+}
+
 /** Applies conventions to any kotlin-jvm project. */
 public abstract class KotlinJvmModulePlugin : BaseModulePlugin() {
   override fun apply(target: Project) {
 
-    target.extensions.create("jvmModule", KotlinJvmModuleExtension::class.java)
+    target.extensions.create("antipasto", KotlinJvmModuleExtension::class.java)
 
     target.plugins.apply(KotlinJvmConventionPlugin::class.java)
 
@@ -57,7 +69,7 @@ public abstract class KotlinJvmModulePlugin : BaseModulePlugin() {
 public abstract class KotlinMultiplatformModulePlugin : BaseModulePlugin() {
   override fun apply(target: Project) {
 
-    target.extensions.create("kmpModule", KotlinMultiplatformModuleExtension::class.java)
+    target.extensions.create("antipasto", KotlinMultiplatformModuleExtension::class.java)
 
     target.plugins.apply(KotlinMultiplatformConventionPlugin::class.java)
 
