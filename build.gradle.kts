@@ -13,6 +13,12 @@
  * limitations under the License.
  */
 
+buildscript {
+  dependencies {
+    classpath(libs.rickBusarow.kgx)
+  }
+}
+
 plugins {
   alias(libs.plugins.poko) apply false
   alias(libs.plugins.kotlin.jvm) apply false
@@ -39,6 +45,7 @@ val ktlintPluginId = libs.plugins.ktlint.get().pluginId
 
 allprojects ap@{
   version = property("VERSION_NAME") as String
+  group = property("GROUP") as String
 
   val innerProject = this@ap
 

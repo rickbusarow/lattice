@@ -21,8 +21,20 @@ plugins {
 }
 
 if (rootProject.name == "antipasto") {
-  apply(plugin = "com.rickbusarow.antipasto.jvm-module")
+  apply(plugin = "com.rickbusarow.antipasto.gradle-plugin")
 }
+
+val pluginDeclaration: NamedDomainObjectProvider<PluginDeclaration> =
+  gradlePlugin.plugins
+    .register("$group:antipasto") {
+      id = pluginId
+      displayName = "ktlint"
+      implementationClass = "com.rickbusarow.ktlint.KtLintPlugin"
+      version = VERSION_NAME
+      description = moduleDescription
+      @Suppress("UnstableApiUsage")
+      this@register.tags.set(listOf("markdown", "documentation"))
+    }
 
 gradlePlugin {
   plugins {
@@ -30,9 +42,13 @@ gradlePlugin {
       id = "com.rickbusarow.antipasto.composite"
       implementationClass = "com.rickbusarow.antipasto.CompositePlugin"
     }
+    create("gradle-plugin") {
+      id = "com.rickbusarow.antipasto.gradle-plugin"
+      implementationClass = "com.rickbusarow.antipasto.KotlinJvmModulePlugin"
+    }
     create("jvm") {
       id = "com.rickbusarow.antipasto.jvm-module"
-      implementationClass = "com.rickbusarow.antipasto.KotlinJvmModulePlugin"
+      implementationClass = "com.rickbusarow.antipasto.GradlePluginModulePlugin"
     }
     create("kmp") {
       id = "com.rickbusarow.antipasto.kmp-module"
@@ -41,6 +57,7 @@ gradlePlugin {
     create("root") {
       id = "com.rickbusarow.antipasto.root"
       implementationClass = "com.rickbusarow.antipasto.RootPlugin"
+      val pd = this
     }
 
     create("curator") {

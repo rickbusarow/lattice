@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-import org.gradle.internal.impldep.org.eclipse.jgit.lib.ObjectChecker.tag
-import org.gradle.internal.impldep.org.eclipse.jgit.transport.ReceiveCommand.link
-
 rootProject.name = "antipasto"
 
 pluginManagement {
