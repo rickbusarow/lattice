@@ -28,7 +28,6 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
@@ -38,45 +37,6 @@ import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 import org.gradle.plugins.signing.Sign
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
-import javax.inject.Inject
-
-public interface PublishingMavenHandler : java.io.Serializable {
-  public fun publishMaven(artifactId: String, pomDescription: String)
-  public fun publishMaven(
-    groupId: String,
-    artifactId: String,
-    pomDescription: String,
-    versionName: String
-  )
-}
-
-public open class DefaultPublishingMavenHandler @Inject constructor(
-  private val target: Project,
-  private val objects: ObjectFactory
-) : PublishingMavenHandler {
-
-  override fun publishMaven(artifactId: String, pomDescription: String) {
-    publishMaven(
-      groupId = target.GROUP,
-      artifactId = artifactId,
-      pomDescription = pomDescription,
-      versionName = target.VERSION_NAME
-    )
-  }
-
-  override fun publishMaven(
-    groupId: String,
-    artifactId: String,
-    pomDescription: String,
-    versionName: String
-  ) {
-    TODO("Not yet implemented")
-  }
-}
-
-public interface PublishingGradleHandler : java.io.Serializable {
-  public fun publishPlugin(pluginDeclaration: NamedDomainObjectProvider<PluginDeclaration>)
-}
 
 @Suppress("UndocumentedPublicClass")
 public interface PublishingExtension {
