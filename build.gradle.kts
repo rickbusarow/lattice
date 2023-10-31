@@ -26,7 +26,7 @@ plugins {
   alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.doks)
   alias(libs.plugins.moduleCheck)
-  id("com.rickbusarow.lattice.jvm-module") apply false
+  id("com.rickbusarow.lattice.kotlin-jvm") apply false
   id("com.rickbusarow.lattice.root")
 }
 

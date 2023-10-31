@@ -22,7 +22,7 @@ plugins {
 }
 
 if (rootProject.name == "antipasto") {
-  apply(plugin = "com.rickbusarow.antipasto.gradle-plugin")
+  apply(plugin = "com.rickbusarow.antipasto.java-gradle-plugin")
 }
 
 // val pluginDeclaration: NamedDomainObjectProvider<PluginDeclaration> =
