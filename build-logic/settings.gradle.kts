@@ -53,7 +53,9 @@ dependencyResolutionManagement {
   }
 }
 
-listOf("lattice-gradle-plugin").forEach { name ->
+listOf(
+  "antipasto-gradle-plugin"
+).forEach { name ->
   include(":$name")
   project(":$name").projectDir = file("../$name")
 }
