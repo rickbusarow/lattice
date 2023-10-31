@@ -13,6 +13,7 @@ dokkatoo = "2.0.0"
 dropbox-dependencyGuard = "0.4.3"
 ec4j = "0.3.0"
 github-release = "2.5.1"
+gradle-plugin-publish = "1.1.0"
 integration-test = "1.4.5"
 jUnit = "5.10.1"
 johnrengelman-shadow = "8.1.1"
@@ -47,6 +48,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ktlint = { id = "com.rickbusarow.ktlint", version.ref = "rickBusarow-ktlint" }
 moduleCheck = { id = "com.rickbusarow.module-check", version.ref = "rickBusarow-moduleCheck" }
 poko = { id = "dev.drewhamilton.poko", version.ref = "poko" }
+plugin-publish = {id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 
 [libraries]
 
