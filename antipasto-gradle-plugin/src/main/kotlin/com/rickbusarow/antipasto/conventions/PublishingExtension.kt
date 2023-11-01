@@ -45,7 +45,7 @@ import org.gradle.plugin.devel.PluginDeclaration
 import org.gradle.plugins.signing.Sign
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
 
-internal val Project.mavenPublishExtension: MavenPublishBaseExtension
+internal val Project.mavenPublishBaseExtension: MavenPublishBaseExtension
   get() = extensions.getByType(MavenPublishBaseExtension::class.java)
 
 internal val Project.gradlePublishingExtension: PublishingExtension
