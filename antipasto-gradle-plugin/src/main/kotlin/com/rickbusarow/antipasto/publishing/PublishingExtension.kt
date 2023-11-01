@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-package com.rickbusarow.lattice.conventions
+package com.rickbusarow.lattice.publishing
 
 import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
+import com.rickbusarow.lattice.conventions.applyBinaryCompatibility
 import com.rickbusarow.lattice.core.AntipastoTask
 import com.rickbusarow.lattice.core.GITHUB_OWNER
 import com.rickbusarow.lattice.core.GITHUB_OWNER_REPO
@@ -35,6 +36,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
+import org.gradle.api.publish.Publication
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
@@ -45,11 +47,19 @@ import org.gradle.plugin.devel.PluginDeclaration
 import org.gradle.plugins.signing.Sign
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
 
+internal fun MavenPublication.isPluginMarker(): Boolean = name.endsWith("PluginMarkerMaven")
+internal fun MavenPublication.nameWithoutMarker(): String = name.removeSuffix("PluginMarkerMaven")
+internal fun Publication.isPluginMarker(): Boolean =
+  (this as? MavenPublication)?.isPluginMarker() ?: false
+
 internal val Project.mavenPublishBaseExtension: MavenPublishBaseExtension
   get() = extensions.getByType(MavenPublishBaseExtension::class.java)
 
 internal val Project.gradlePublishingExtension: PublishingExtension
   get() = extensions.getByType(PublishingExtension::class.java)
+
+internal val Project.gradlePluginExtension: GradlePluginDevelopmentExtension
+  get() = extensions.getByType(GradlePluginDevelopmentExtension::class.java)
 
 internal val Project.mavenPublications: NamedDomainObjectSet<MavenPublication>
   get() = gradlePublishingExtension.publications.withType(MavenPublication::class.java)

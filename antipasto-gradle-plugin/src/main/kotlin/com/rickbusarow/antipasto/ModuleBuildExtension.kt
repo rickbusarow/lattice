@@ -22,8 +22,12 @@ import com.rickbusarow.lattice.conventions.KotlinJvmExtension
 import com.rickbusarow.lattice.conventions.KotlinMultiplatformExtension
 import com.rickbusarow.lattice.conventions.KspExtension
 import com.rickbusarow.lattice.conventions.PokoExtension
-import com.rickbusarow.lattice.conventions.PublishingExtension
 import com.rickbusarow.lattice.conventions.SerializationExtension
+import com.rickbusarow.lattice.publishing.DefaultPublishingGradleHandler
+import com.rickbusarow.lattice.publishing.DefaultPublishingMavenHandler
+import com.rickbusarow.lattice.publishing.PublishingExtension
+import com.rickbusarow.lattice.publishing.PublishingGradleHandler
+import com.rickbusarow.lattice.publishing.PublishingMavenHandler
 import org.gradle.api.model.ObjectFactory
 import javax.inject.Inject
 
@@ -47,7 +51,9 @@ public abstract class GradlePluginModuleExtension @Inject constructor(
   KspExtension,
   PokoExtension,
   PublishingExtension,
-  SerializationExtension
+  SerializationExtension,
+  PublishingGradleHandler by objects.newInstance<DefaultPublishingGradleHandler>(),
+  PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>()
 
 @Suppress("UndocumentedPublicClass")
 public abstract class KotlinJvmModuleExtension @Inject constructor(

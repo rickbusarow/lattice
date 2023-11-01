@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.rickbusarow.antipasto.conventions
+package com.rickbusarow.antipasto.publishing
 
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project

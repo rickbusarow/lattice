@@ -29,6 +29,7 @@ plugins {
   alias(libs.plugins.moduleCheck)
   id("com.rickbusarow.lattice.kotlin-jvm") apply false
   id("com.rickbusarow.lattice.root")
+  base
 }
 
 moduleCheck {
