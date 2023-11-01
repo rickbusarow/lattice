@@ -1,0 +1,56 @@
+[
+  {
+    "gradlePath": ":antipasto-gradle-plugin",
+    "group": "com.rickbusarow.antipasto.composite",
+    "artifactId": "com.rickbusarow.antipasto.composite.gradle.plugin",
+    "description": "Convention plugin for making composite Gradle builds easier",
+    "packaging": "pom",
+    "javaVersion": "11",
+    "publicationName": "compositePluginMarkerMaven"
+  },
+  {
+    "gradlePath": ":antipasto-gradle-plugin",
+    "group": "com.rickbusarow.antipasto.java-gradle-plugin",
+    "artifactId": "com.rickbusarow.antipasto.java-gradle-plugin.gradle.plugin",
+    "description": "Convention plugin for a java-gradle-plugin project",
+    "packaging": "pom",
+    "javaVersion": "11",
+    "publicationName": "java-gradle-pluginPluginMarkerMaven"
+  },
+  {
+    "gradlePath": ":antipasto-gradle-plugin",
+    "group": "com.rickbusarow.antipasto.kotlin-jvm",
+    "artifactId": "com.rickbusarow.antipasto.kotlin-jvm.gradle.plugin",
+    "description": "Convention plugin for a Kotlin JVM project",
+    "packaging": "pom",
+    "javaVersion": "11",
+    "publicationName": "jvmPluginMarkerMaven"
+  },
+  {
+    "gradlePath": ":antipasto-gradle-plugin",
+    "group": "com.rickbusarow.antipasto.kotlin-multiplatform",
+    "artifactId": "com.rickbusarow.antipasto.kotlin-multiplatform.gradle.plugin",
+    "description": "Convention plugin for a Kotlin Multiplatform project",
+    "packaging": "pom",
+    "javaVersion": "11",
+    "publicationName": "kmpPluginMarkerMaven"
+  },
+  {
+    "gradlePath": ":antipasto-gradle-plugin",
+    "group": "com.rickbusarow.antipasto",
+    "artifactId": "antipasto-gradle-plugin",
+    "description": "Convention plugins for Gradle builds",
+    "packaging": "jar",
+    "javaVersion": "11",
+    "publicationName": "pluginMaven"
+  },
+  {
+    "gradlePath": ":antipasto-gradle-plugin",
+    "group": "com.rickbusarow.antipasto.root",
+    "artifactId": "com.rickbusarow.antipasto.root.gradle.plugin",
+    "description": "Convention plugin for the root project of a multi-module build",
+    "packaging": "pom",
+    "javaVersion": "11",
+    "publicationName": "rootPluginMarkerMaven"
+  }
+]

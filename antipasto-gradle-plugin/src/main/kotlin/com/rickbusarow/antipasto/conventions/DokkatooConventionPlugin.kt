@@ -142,11 +142,6 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
       }
     }
 
-    // Make dummy tasks with the original Dokka plugin names, then delegate them to the Dokkatoo tasks
-    target.tasks.register("dokkaHtml").dependsOn(DOKKATOO_HTML_TASK_NAME)
-    target.tasks.register("dokkaHtmlMultiModule")
-      .dependsOn(target.rootProject.tasks.named(DOKKATOO_HTML_TASK_NAME))
-
     target.plugins.withType(MavenPublishPlugin::class.java).configureEach {
 
       val checkJavadocJarIsNotVersioned = target.tasks

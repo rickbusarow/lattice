@@ -15,6 +15,7 @@
 
 package com.rickbusarow.antipasto.conventions
 
+import com.rickbusarow.antipasto.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
 import com.rickbusarow.antipasto.core.AntipastoTask
 import com.rickbusarow.antipasto.core.GITHUB_OWNER
 import com.rickbusarow.antipasto.core.GITHUB_OWNER_REPO
@@ -27,6 +28,7 @@ import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.NamedDomainObjectProvider
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -37,6 +39,31 @@ import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 import org.gradle.plugins.signing.Sign
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
+
+internal val Project.mavenPublishExtension: MavenPublishBaseExtension
+  get() = extensions.getByType(MavenPublishBaseExtension::class.java)
+
+internal val Project.gradlePublishingExtension: PublishingExtension
+  get() = extensions.getByType(PublishingExtension::class.java)
+
+internal val Project.mavenPublications: NamedDomainObjectSet<MavenPublication>
+  get() = gradlePublishingExtension.publications.withType(MavenPublication::class.java)
+
+internal inline fun NamedDomainObjectSet<MavenPublication>.configureNonMarkers(
+  crossinline action: MavenPublication.() -> Unit
+) {
+  configureEach { publication ->
+    if (!publication.name.endsWith("PluginMarkerMaven")) {
+      publication.action()
+    }
+  }
+}
+
+internal inline fun NamedDomainObjectSet<MavenPublication>.configureEach(
+  crossinline action: MavenPublication.() -> Unit
+) {
+  configureEach { action(it) }
+}
 
 @Suppress("UndocumentedPublicClass")
 public interface PublishingExtension {
@@ -155,7 +182,7 @@ private fun Project.configurePublish(artifactId: String, pomDescription: String,
       pluginManager.hasPlugin("java-gradle-plugin") -> {
         extension.configure(
           GradlePlugin(
-            javadocJar = Dokka(taskName = "dokkaHtml"),
+            javadocJar = Dokka(taskName = DOKKATOO_HTML_TASK_NAME),
             sourcesJar = true
           )
         )
@@ -163,14 +190,14 @@ private fun Project.configurePublish(artifactId: String, pomDescription: String,
 
       pluginManager.hasPlugin("com.github.johnrengelman.shadow") -> {
         extension.configure(
-          KotlinJvm(javadocJar = Dokka(taskName = "dokkaHtml"), sourcesJar = true)
+          KotlinJvm(javadocJar = Dokka(taskName = DOKKATOO_HTML_TASK_NAME), sourcesJar = true)
         )
         applyBinaryCompatibility()
       }
 
       else -> {
         extension.configure(
-          KotlinJvm(javadocJar = Dokka(taskName = "dokkaHtml"), sourcesJar = true)
+          KotlinJvm(javadocJar = Dokka(taskName = DOKKATOO_HTML_TASK_NAME), sourcesJar = true)
         )
         applyBinaryCompatibility()
       }
@@ -243,10 +270,7 @@ private fun Project.registerCoordinatesStringsCheckTask(groupId: String, artifac
 }
 
 private fun Project.registerSnapshotVersionCheckTask() {
-  tasks.registerOnce(
-    "checkVersionIsSnapshot",
-    AntipastoTask::class.java
-  ) { task ->
+  tasks.registerOnce("checkVersionIsSnapshot", AntipastoTask::class.java) { task ->
     task.group = "publishing"
     task.description = "ensures that the project version has a -SNAPSHOT suffix"
     val versionString = version as String

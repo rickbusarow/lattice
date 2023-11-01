@@ -15,6 +15,7 @@
 
 package com.rickbusarow.antipasto
 
+import com.rickbusarow.antipasto.conventions.AntipastoPublishPlugin
 import com.rickbusarow.antipasto.conventions.CheckPlugin
 import com.rickbusarow.antipasto.conventions.CleanPlugin
 import com.rickbusarow.antipasto.conventions.DependencyGuardConventionPlugin
@@ -31,6 +32,7 @@ import org.gradle.api.Project
 public abstract class BaseModulePlugin : Plugin<Project> {
   override fun apply(target: Project) {
 
+    target.plugins.apply(AntipastoPublishPlugin::class.java)
     target.plugins.apply(CheckPlugin::class.java)
     target.plugins.apply(CleanPlugin::class.java)
     target.plugins.apply(DependencyGuardConventionPlugin::class.java)

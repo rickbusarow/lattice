@@ -16,6 +16,7 @@
 package com.rickbusarow.antipasto.curator
 
 import com.rickbusarow.antipasto.core.existsOrNull
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.DefaultTask
@@ -56,7 +57,11 @@ public abstract class AbstractCuratorTask(
 
   @get:Internal
   protected val jsonAdapter: Json by lazy {
-    Json(builderAction = { prettyPrint = true })
+    Json(builderAction = {
+      prettyPrint = true
+      @OptIn(ExperimentalSerializationApi::class)
+      prettyPrintIndent = "  "
+    })
   }
 
   @get:Internal

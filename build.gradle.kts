@@ -25,6 +25,7 @@ plugins {
   alias(libs.plugins.kotlin.serialization) apply false
   alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.doks)
+  alias(libs.plugins.vanniktech.publish) apply false
   alias(libs.plugins.moduleCheck)
   id("com.rickbusarow.antipasto.kotlin-jvm") apply false
   id("com.rickbusarow.antipasto.root")
