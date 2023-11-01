@@ -15,6 +15,7 @@
 
 package com.rickbusarow.lattice
 
+import com.rickbusarow.antipasto.conventions.AntipastoPublishPlugin
 import com.rickbusarow.lattice.conventions.CheckPlugin
 import com.rickbusarow.lattice.conventions.CleanPlugin
 import com.rickbusarow.lattice.conventions.DependencyGuardConventionPlugin
@@ -31,6 +32,7 @@ import org.gradle.api.Project
 public abstract class BaseModulePlugin : Plugin<Project> {
   override fun apply(target: Project) {
 
+    target.plugins.apply(AntipastoPublishPlugin::class.java)
     target.plugins.apply(CheckPlugin::class.java)
     target.plugins.apply(CleanPlugin::class.java)
     target.plugins.apply(DependencyGuardConventionPlugin::class.java)

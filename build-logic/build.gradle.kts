@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
   dependencies {
     classpath(libs.kotlin.gradle.plugin)
-    classpath(libs.vanniktech.publish)
+    // classpath(libs.vanniktech.publish)
     classpath(libs.rickBusarow.kgx)
   }
 }
@@ -30,6 +30,7 @@ plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.serialization) apply false
   alias(libs.plugins.ktlint)
+  alias(libs.plugins.vanniktech.publish) apply false
   base
 }
 

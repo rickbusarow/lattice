@@ -15,6 +15,7 @@
 
 package com.rickbusarow.lattice.conventions
 
+import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.dependOn
 import com.rickbusarow.lattice.core.VERSION_NAME
@@ -86,7 +87,7 @@ public abstract class DokkaVersionArchivePlugin : Plugin<Project> {
         }
 
         task.mustRunAfter(target.tasks.withType(DokkaMultiModuleTask::class.java))
-        task.dependsOn("dokkaHtmlMultiModule")
+        task.dependsOn(target.rootProject.tasks.named(DOKKATOO_HTML_TASK_NAME))
       }
 
     target.tasks.register("syncDokkaToArchive", Copy::class.java) { task ->

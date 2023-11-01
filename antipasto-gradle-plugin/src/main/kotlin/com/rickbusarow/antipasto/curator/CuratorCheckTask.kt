@@ -113,7 +113,7 @@ public open class CuratorCheckTask @Inject constructor(
         if (!lenientOs) {
           appendLine()
           append("Add the `--lenient-os` option replace this failure with a warning: ")
-          appendLine("./gradlew artifactsCheck --lenient-os")
+          appendLine("./gradlew curatorCheck --lenient-os")
         }
       }
 
@@ -153,7 +153,7 @@ public open class CuratorCheckTask @Inject constructor(
 
       appendLine(
         "\tArtifact definitions don't match.  If this is intended, " +
-          "run `./gradlew artifactsDump` and commit changes."
+          "run `./gradlew curatorDump` and commit changes."
       )
       appendLine()
 

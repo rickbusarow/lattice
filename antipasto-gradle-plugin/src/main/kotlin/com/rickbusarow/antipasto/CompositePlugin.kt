@@ -16,6 +16,7 @@
 package com.rickbusarow.lattice
 
 import com.rickbusarow.kgx.checkProjectIsRoot
+import com.rickbusarow.kgx.internal.InternalGradleApiAccess
 import com.rickbusarow.kgx.internal.allIncludedProjects
 import com.rickbusarow.lattice.core.splitInclusive
 import modulecheck.utils.mapToSet
@@ -58,6 +59,7 @@ public open class CompositeTaskSpec @Inject constructor(
 )
 
 /** This plugin finds specified tasks in included builds and */
+@InternalGradleApiAccess
 public abstract class CompositePlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
@@ -88,7 +90,7 @@ public abstract class CompositePlugin : Plugin<Project> {
 
           val tn = ta.first()
 
-          if (tn.startsWith(':')) {
+          if (tn.startsWith(':') || tn == "help") {
             // qualified task names aren't propagated
             return@flatMap listOf(ta)
           }
