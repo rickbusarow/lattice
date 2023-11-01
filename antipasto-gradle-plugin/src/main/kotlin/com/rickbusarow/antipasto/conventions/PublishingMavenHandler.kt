@@ -86,7 +86,7 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
 
     applyBinaryCompatibility()
 
-    val extension = target.mavenPublishExtension
+    val extension = target.mavenPublishBaseExtension
 
     extension.publishToMavenCentral(SonatypeHost.DEFAULT, automaticRelease = true)
 
