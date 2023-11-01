@@ -29,6 +29,7 @@ plugins {
   alias(libs.plugins.moduleCheck)
   id("com.rickbusarow.antipasto.kotlin-jvm") apply false
   id("com.rickbusarow.antipasto.root")
+  base
 }
 
 moduleCheck {

@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-package com.rickbusarow.antipasto.conventions
+package com.rickbusarow.antipasto.publishing
 
 import com.rickbusarow.antipasto.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
+import com.rickbusarow.antipasto.conventions.applyBinaryCompatibility
 import com.rickbusarow.antipasto.core.GITHUB_OWNER
 import com.rickbusarow.antipasto.core.GITHUB_OWNER_REPO
 import com.rickbusarow.antipasto.core.GITHUB_REPOSITORY
@@ -23,8 +24,6 @@ import com.rickbusarow.antipasto.core.GROUP
 import com.rickbusarow.antipasto.core.VERSION_NAME
 import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
-import com.rickbusarow.kgx.internal.InternalGradleApiAccess
-import com.rickbusarow.kgx.internal.whenElementKnown
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.JavadocJar.Dokka
@@ -34,7 +33,6 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.plugins.signing.Sign
 import javax.inject.Inject
 
@@ -153,16 +151,6 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
 
     // registerSnapshotVersionCheckTask()
     // configureSkipDokka()
-
-    @OptIn(InternalGradleApiAccess::class)
-    tasks.withType(PublishToMavenRepository::class.java).whenElementKnown { ele ->
-
-      tasks.register(ele.elementName + "NoDokka", ele.elementType) {
-        it.dependsOn(ele.elementName)
-
-        it.onlyIf { !sd }
-      }
-    }
 
     tasks.withType(Sign::class.java).configureEach {
       // it.notCompatibleWithConfigurationCache("")

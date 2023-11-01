@@ -15,7 +15,6 @@
 
 package com.rickbusarow.antipasto
 
-import com.rickbusarow.antipasto.conventions.AntipastoPublishPlugin
 import com.rickbusarow.antipasto.conventions.CheckPlugin
 import com.rickbusarow.antipasto.conventions.CleanPlugin
 import com.rickbusarow.antipasto.conventions.DependencyGuardConventionPlugin
@@ -25,6 +24,7 @@ import com.rickbusarow.antipasto.conventions.KotlinJvmConventionPlugin
 import com.rickbusarow.antipasto.conventions.KotlinMultiplatformConventionPlugin
 import com.rickbusarow.antipasto.conventions.KtLintConventionPlugin
 import com.rickbusarow.antipasto.conventions.TestConventionPlugin
+import com.rickbusarow.antipasto.publishing.AntipastoPublishPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

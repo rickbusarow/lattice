@@ -16,9 +16,6 @@
 @file:Suppress("VariableNaming")
 
 import com.rickbusarow.kgx.extras
-import com.rickbusarow.kgx.getOrPut
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
 
 buildscript {
   dependencies {
@@ -89,31 +86,31 @@ gradlePlugin {
 
   plugins {
 
-    create("root") {
+    register("root") {
       id = "com.rickbusarow.antipasto.root"
       implementationClass = "com.rickbusarow.antipasto.RootPlugin"
       description = "Convention plugin for the root project of a multi-module build"
       tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
     }
-    create("composite") {
+    register("composite") {
       id = "com.rickbusarow.antipasto.composite"
       implementationClass = "com.rickbusarow.antipasto.CompositePlugin"
       description = "Convention plugin for making composite Gradle builds easier"
       tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
     }
-    create("java-gradle-plugin") {
+    register("java-gradle-plugin") {
       id = "com.rickbusarow.antipasto.java-gradle-plugin"
       implementationClass = "com.rickbusarow.antipasto.KotlinJvmModulePlugin"
       description = "Convention plugin for a java-gradle-plugin project"
       tags("convention-plugin", "kotlin", "plugin", "java", "jvm", "kotlin-jvm")
     }
-    create("jvm") {
+    register("jvm") {
       id = "com.rickbusarow.antipasto.kotlin-jvm"
       implementationClass = "com.rickbusarow.antipasto.GradlePluginModulePlugin"
       description = "Convention plugin for a Kotlin JVM project"
       tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
     }
-    create("kmp") {
+    register("kmp") {
       id = "com.rickbusarow.antipasto.kotlin-multiplatform"
       implementationClass = "com.rickbusarow.antipasto.KotlinMultiplatformModulePlugin"
       description = "Convention plugin for a Kotlin Multiplatform project"
@@ -126,36 +123,6 @@ if (rootProject.name == "antipasto") {
 
   apply(plugin = libs.plugins.vanniktech.publish.get().pluginId)
 
-  extensions.configure<MavenPublishBaseExtension> {
-    publishToMavenCentral(SonatypeHost.DEFAULT, automaticRelease = true)
-    signAllPublications()
-    pom {
-      name.set("Antipasto")
-      url.set(GITHUB_REPOSITORY)
-
-      licenses {
-        license {
-          name.set("The Apache License, Version 2.0")
-          url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-          distribution.set("repo")
-        }
-      }
-      scm {
-        val scm = this
-        scm.url.set(GITHUB_REPOSITORY)
-        scm.connection.set("scm:git:git://github.com/$GITHUB_OWNER_REPO.git")
-        scm.developerConnection.set("scm:git:ssh://git@github.com/$GITHUB_OWNER_REPO.git")
-      }
-      developers {
-        developer {
-          id.set(GITHUB_OWNER)
-          name.set(DEVELOPER_NAME)
-          url.set(DEVELOPER_URL)
-        }
-      }
-    }
-  }
-
   fun MavenPublication.isPluginMarker(): Boolean = name.endsWith("PluginMarkerMaven")
   fun Publication.isPluginMarker(): Boolean = (this as? MavenPublication)?.isPluginMarker() ?: false
 
@@ -165,10 +132,7 @@ if (rootProject.name == "antipasto") {
 
       publication.groupId = project.group as String
 
-      if (publication.isPluginMarker()) {
-        val plugin = gradlePlugin.plugins[publication.name.removeSuffix("PluginMarkerMaven")]
-        publication.pom.description.set(plugin.description)
-      } else {
+      if (!publication.isPluginMarker()) {
         publication.artifactId = "antipasto-gradle-plugin"
         publication.pom.description.set("Convention plugins for Gradle builds")
       }
@@ -182,31 +146,11 @@ if (rootProject.name == "antipasto") {
     }
   }
 
-  val skipDokka = extras.getOrPut("skipDokka") { false }
-
-  tasks.withType(Jar::class.java).configureEach {
-
-    val task = this
-
-    if (task.name == "javadocJar" && !skipDokka) {
-      val dokka = tasks.named("dokkatooGeneratePublicationHtml")
-      task.archiveClassifier.set("javadoc")
-      task.dependsOn(dokka)
-      task.from(dokka)
-    }
-  }
-
-  tasks.withType(GenerateModuleMetadata::class.java).configureEach {
-    mustRunAfter("javadocJar")
-  }
-  tasks.withType(AbstractPublishToMaven::class.java).configureEach {
-    mustRunAfter(tasks.withType(Jar::class.java))
-  }
-  tasks.withType(Sign::class.java).configureEach {
-    mustRunAfter(tasks.withType(Jar::class.java))
-  }
-
   tasks.register("publishToBuildM2") {
+    dependsOn("publishAllPublicationsToBuildM2Repository")
+  }
+  tasks.register("publishToBuildM2NoDokka") {
+    project.extras.set("skipDokka", true)
     dependsOn("publishAllPublicationsToBuildM2Repository")
   }
 }
