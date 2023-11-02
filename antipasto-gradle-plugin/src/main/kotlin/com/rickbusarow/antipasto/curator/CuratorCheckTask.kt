@@ -15,6 +15,7 @@
 
 package com.rickbusarow.lattice.curator
 
+import com.rickbusarow.antipasto.core.CheckTask
 import com.rickbusarow.lattice.core.Color.Companion.colorized
 import com.rickbusarow.lattice.core.Color.RED
 import com.rickbusarow.lattice.core.Color.YELLOW
@@ -35,7 +36,7 @@ import javax.inject.Inject
 public open class CuratorCheckTask @Inject constructor(
   objectFactory: ObjectFactory,
   projectLayout: ProjectLayout
-) : AbstractCuratorTask(projectLayout) {
+) : AbstractCuratorTask(projectLayout), CheckTask {
 
   init {
     description = "Parses the Maven artifact parameters for all modules " +

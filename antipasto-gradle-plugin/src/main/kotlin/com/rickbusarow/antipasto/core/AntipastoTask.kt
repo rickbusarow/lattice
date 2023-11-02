@@ -16,9 +16,14 @@
 package com.rickbusarow.lattice.core
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 
 @Suppress("UndocumentedPublicClass")
-public abstract class LatticeTask : DefaultTask()
+public abstract class DefaultLatticeTask : DefaultTask(), LatticeTask
+public interface LatticeTask : Task
+
+public interface FixTask : LatticeTask
+public interface CheckTask : LatticeTask
 
 @Suppress("UndocumentedPublicClass")
-public abstract class LatticeCodeGeneratorTask : LatticeTask()
+public abstract class LatticeCodeGeneratorTask : DefaultLatticeTask()

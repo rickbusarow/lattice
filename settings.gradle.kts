@@ -30,6 +30,7 @@ pluginManagement {
   }
 
   includeBuild("build-logic")
+  includeBuild("../kgx")
 
   plugins {
     id("com.rickbusarow.antipasto.jvm-module") apply false
@@ -85,3 +86,4 @@ gradleEnterprise {
 include(":antipasto-gradle-plugin")
 
 includeBuild("build-logic")
+includeBuild("../kgx")

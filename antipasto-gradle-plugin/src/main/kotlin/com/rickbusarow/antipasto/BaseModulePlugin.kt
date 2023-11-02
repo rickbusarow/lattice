@@ -49,7 +49,7 @@ public abstract class GradlePluginModulePlugin : BaseModulePlugin() {
 
     target.extensions.create("antipasto", GradlePluginModuleExtension::class.java)
 
-    target.plugins.apply(GradlePluginModulePlugin::class.java)
+    target.plugins.apply(KotlinJvmConventionPlugin::class.java)
 
     super.apply(target)
   }

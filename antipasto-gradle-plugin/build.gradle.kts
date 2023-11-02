@@ -100,13 +100,13 @@ gradlePlugin {
     }
     register("java-gradle-plugin") {
       id = "com.rickbusarow.antipasto.java-gradle-plugin"
-      implementationClass = "com.rickbusarow.antipasto.KotlinJvmModulePlugin"
+      implementationClass = "com.rickbusarow.antipasto.GradlePluginModulePlugin"
       description = "Convention plugin for a java-gradle-plugin project"
       tags("convention-plugin", "kotlin", "plugin", "java", "jvm", "kotlin-jvm")
     }
     register("jvm") {
       id = "com.rickbusarow.antipasto.kotlin-jvm"
-      implementationClass = "com.rickbusarow.antipasto.GradlePluginModulePlugin"
+      implementationClass = "com.rickbusarow.antipasto.KotlinJvmModulePlugin"
       description = "Convention plugin for a Kotlin JVM project"
       tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
     }

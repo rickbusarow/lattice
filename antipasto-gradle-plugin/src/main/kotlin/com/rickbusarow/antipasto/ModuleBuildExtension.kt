@@ -45,20 +45,20 @@ public abstract class RootExtension @Inject constructor(
 @Suppress("UndocumentedPublicClass")
 public abstract class GradlePluginModuleExtension @Inject constructor(
   private val objects: ObjectFactory
-) : AutoServiceExtension,
+) : PublishingGradleHandler by objects.newInstance<DefaultPublishingGradleHandler>(),
+  PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>(),
+  AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,
   KspExtension,
   PokoExtension,
   PublishingExtension,
-  SerializationExtension,
-  PublishingGradleHandler by objects.newInstance<DefaultPublishingGradleHandler>(),
-  PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>()
+  SerializationExtension
 
 @Suppress("UndocumentedPublicClass")
 public abstract class KotlinJvmModuleExtension @Inject constructor(
   private val objects: ObjectFactory
-) :
+) : PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,

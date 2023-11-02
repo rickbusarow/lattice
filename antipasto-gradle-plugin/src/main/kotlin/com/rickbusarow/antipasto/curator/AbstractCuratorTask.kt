@@ -15,11 +15,11 @@
 
 package com.rickbusarow.lattice.curator
 
+import com.rickbusarow.lattice.core.DefaultAntipastoTask
 import com.rickbusarow.lattice.core.existsOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
@@ -33,7 +33,7 @@ import org.gradle.api.tasks.OutputFile
  */
 public abstract class AbstractCuratorTask(
   private val projectLayout: ProjectLayout
-) : DefaultTask() {
+) : DefaultAntipastoTask() {
 
   /**
    * This file contains all definitions for published artifacts.
