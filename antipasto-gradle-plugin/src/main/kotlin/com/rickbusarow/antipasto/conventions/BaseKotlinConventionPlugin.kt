@@ -31,10 +31,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import org.jetbrains.kotlin.gradle.tasks.BaseKotlinCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.Serializable
-import kotlin.jvm.java
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile as KotlinCompileDsl
 
 @Suppress("UndocumentedPublicClass")
 public interface KotlinJvmExtension : KotlinExtension
@@ -92,10 +89,19 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
   }
 
   private fun configureKotlinOptions(target: Project, extension: KotlinExtension) {
-    target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
+    target.tasks.withType(
+      org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java
+    ).configureEach { task ->
+
+      // target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
       task.kotlinOptions.jvmTarget = target.JVM_TARGET
-    }
-    target.tasks.withType(KotlinCompileDsl::class.java).configureEach { task ->
+      // }
+      // target.tasks.withType(KotlinCompileDsl::class.java).configureEach { task ->
+
+      """   -- ${task.name}  --  ${task::class.qualifiedName} """
+        // TODO <Rick> delete me
+        .also(::println)
+
       task.kotlinOptions {
 
         options.allWarningsAsErrors.set(extension.allWarningsAsErrors.orElse(false))

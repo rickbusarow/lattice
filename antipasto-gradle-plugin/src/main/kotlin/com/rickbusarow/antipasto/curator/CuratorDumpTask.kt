@@ -17,6 +17,7 @@ package com.rickbusarow.antipasto.curator
 
 import com.rickbusarow.antipasto.core.Color.Companion.colorized
 import com.rickbusarow.antipasto.core.Color.RED
+import com.rickbusarow.antipasto.core.FixTask
 import kotlinx.serialization.encodeToString
 import org.gradle.api.GradleException
 import org.gradle.api.file.ProjectLayout
@@ -26,7 +27,7 @@ import javax.inject.Inject
 /** Evaluates all published artifacts in the project and writes the results to `/artifacts.json` */
 public open class CuratorDumpTask @Inject constructor(
   projectLayout: ProjectLayout
-) : AbstractCuratorTask(projectLayout) {
+) : AbstractCuratorTask(projectLayout), FixTask {
 
   init {
     description = "Parses the Maven artifact parameters for all modules " +

@@ -28,7 +28,6 @@ import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.publish.PublishingExtension
@@ -66,9 +65,12 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
     pomDescription: String,
     versionName: String
   ) {
-
-    target.version = versionName
-    target.group = groupId
+    target.publishMaven(
+      groupId = groupId,
+      artifactId = artifactId,
+      pomDescription = pomDescription,
+      versionName = versionName
+    )
   }
 
   @Suppress("UnstableApiUsage")
@@ -84,13 +86,7 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
 
     applyBinaryCompatibility()
 
-    val extension = target.mavenPublishBaseExtension
-
-    extension.publishToMavenCentral(SonatypeHost.DEFAULT, automaticRelease = true)
-
-    extension.signAllPublications()
-
-    extension.pom { mavenPom ->
+    target.mavenPublishBaseExtension.pom { mavenPom ->
       mavenPom.description.set(pomDescription)
       mavenPom.name.set(artifactId)
 
@@ -131,11 +127,21 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
 
       // handle publishing plugins if they're not going to the plugin portal
       pluginManager.hasPlugin("java-gradle-plugin") -> {
-        extension.configure(GradlePlugin(javadocJar = javadocJar, sourcesJar = true))
+        target.mavenPublishBaseExtension.configure(
+          GradlePlugin(
+            javadocJar = javadocJar,
+            sourcesJar = true
+          )
+        )
       }
 
       else -> {
-        extension.configure(KotlinJvm(javadocJar = javadocJar, sourcesJar = true))
+        target.mavenPublishBaseExtension.configure(
+          KotlinJvm(
+            javadocJar = javadocJar,
+            sourcesJar = true
+          )
+        )
       }
     }
 

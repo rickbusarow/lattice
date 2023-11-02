@@ -18,6 +18,20 @@ package com.rickbusarow.antipasto.core
 @Suppress("ClassName", "ObjectPropertyNaming", "ConstPropertyName")
 internal object PluginIds {
 
+  internal object kotlinx {
+    internal object compatibility {
+      /** `org.jetbrains.kotlinx.binary-compatibility-validator` */
+      const val validator = "org.jetbrains.kotlinx.binary-compatibility-validator"
+    }
+  }
+
+  internal object dropbox {
+    internal object dependency {
+      /** `com.dropbox.dependency-guard` */
+      const val guard = "com.dropbox.dependency-guard"
+    }
+  }
+
   internal object kotlin {
     /** `org.jetbrains.kotlin.android` */
     const val android = "org.jetbrains.kotlin.android"

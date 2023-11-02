@@ -16,9 +16,14 @@
 package com.rickbusarow.antipasto.core
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 
 @Suppress("UndocumentedPublicClass")
-public abstract class AntipastoTask : DefaultTask()
+public abstract class DefaultAntipastoTask : DefaultTask(), AntipastoTask
+public interface AntipastoTask : Task
+
+public interface FixTask : AntipastoTask
+public interface CheckTask : AntipastoTask
 
 @Suppress("UndocumentedPublicClass")
-public abstract class AntipastoCodeGeneratorTask : AntipastoTask()
+public abstract class AntipastoCodeGeneratorTask : DefaultAntipastoTask()

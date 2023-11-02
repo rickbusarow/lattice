@@ -102,7 +102,9 @@ public abstract class CompositePlugin : Plugin<Project> {
             val includedPath = "${includedProject.identityPath}:$tn"
 
             if (!taskPaths.contains(includedPath) && includedProject.taskWillResolve(tn)) {
-              println("included project ${includedProject.identityPath} will resolve $includedPath")
+              target.logger.quiet(
+                "The task $tn will delegate to $includedPath"
+              )
 
               buildList<String> {
                 add(includedPath)
