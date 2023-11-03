@@ -15,6 +15,7 @@
 
 package com.rickbusarow.antipasto
 
+import com.rickbusarow.antipasto.composite.CompositePlugin
 import com.rickbusarow.antipasto.conventions.BenManesVersionsPlugin
 import com.rickbusarow.antipasto.conventions.DokkaVersionArchivePlugin
 import com.rickbusarow.antipasto.conventions.GitHubReleasePlugin

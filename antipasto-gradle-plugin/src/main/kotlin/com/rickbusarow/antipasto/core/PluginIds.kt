@@ -19,9 +19,11 @@ package com.rickbusarow.antipasto.core
 internal object PluginIds {
 
   internal object kotlinx {
-    internal object compatibility {
-      /** `org.jetbrains.kotlinx.binary-compatibility-validator` */
-      const val validator = "org.jetbrains.kotlinx.binary-compatibility-validator"
+    internal object binary {
+      internal object compatibility {
+        /** `org.jetbrains.kotlinx.binary-compatibility-validator` */
+        const val validator = "org.jetbrains.kotlinx.binary-compatibility-validator"
+      }
     }
   }
 

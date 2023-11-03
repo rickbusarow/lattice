@@ -15,9 +15,9 @@
 
 package com.rickbusarow.antipasto.conventions
 
-import com.rickbusarow.antipasto.core.JDK_INT
 import com.rickbusarow.antipasto.core.JVM_TARGET
 import com.rickbusarow.antipasto.core.JVM_TARGET_INT
+import com.rickbusarow.antipasto.core.JVM_TOOLCHAIN_INT
 import com.rickbusarow.antipasto.core.KOTLIN_API
 import com.rickbusarow.kgx.javaExtension
 import org.gradle.api.JavaVersion
@@ -31,7 +31,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import org.jetbrains.kotlin.gradle.tasks.BaseKotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.Serializable
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile as KotlinCompileDsl
 
 @Suppress("UndocumentedPublicClass")
 public interface KotlinJvmExtension : KotlinExtension
@@ -57,7 +59,7 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
     val extension = target.extensions.getByType(KotlinExtension::class.java)
 
     val jetbrainsExtension = target.kotlinExtension
-    jetbrainsExtension.jvmToolchain(target.JDK_INT)
+    jetbrainsExtension.jvmToolchain(target.JVM_TOOLCHAIN_INT)
 
     configureKotlinOptions(target, extension)
 
@@ -89,18 +91,11 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
   }
 
   private fun configureKotlinOptions(target: Project, extension: KotlinExtension) {
-    target.tasks.withType(
-      org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java
-    ).configureEach { task ->
 
-      // target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
+    target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
       task.kotlinOptions.jvmTarget = target.JVM_TARGET
-      // }
-      // target.tasks.withType(KotlinCompileDsl::class.java).configureEach { task ->
-
-      """   -- ${task.name}  --  ${task::class.qualifiedName} """
-        // TODO <Rick> delete me
-        .also(::println)
+    }
+    target.tasks.withType(KotlinCompileDsl::class.java).configureEach { task ->
 
       task.kotlinOptions {
 

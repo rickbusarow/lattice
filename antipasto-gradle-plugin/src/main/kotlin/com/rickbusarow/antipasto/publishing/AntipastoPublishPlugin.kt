@@ -16,32 +16,27 @@
 package com.rickbusarow.antipasto.publishing
 
 import com.rickbusarow.antipasto.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
+import com.rickbusarow.antipasto.conventions.applyBinaryCompatibility
 import com.rickbusarow.antipasto.core.PluginIds
 import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.plugins.signing.Sign
 import kotlin.LazyThreadSafetyMode.NONE
 
-/**
- */
+/** */
 public abstract class AntipastoPublishPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
 
-    val GITHUB_OWNER = target.property("GITHUB_OWNER") as String
-    val DEVELOPER_URL = target.property("DEVELOPER_URL") as String
-    val DEVELOPER_NAME = target.property("DEVELOPER_NAME") as String
-    val GITHUB_OWNER_REPO = target.property("GITHUB_OWNER_REPO") as String
-    val GITHUB_REPOSITORY = target.property("GITHUB_REPOSITORY") as String
-
     target.plugins.apply(PluginIds.vanniktech.publish.base)
+
+    target.applyBinaryCompatibility()
 
     val maven = target.mavenPublishBaseExtension
 
@@ -51,16 +46,6 @@ public abstract class AntipastoPublishPlugin : Plugin<Project> {
     val gradlePluginPublish by lazy(NONE) { target.gradlePluginExtension }
 
     target.mavenPublications.configureEach { publication ->
-
-      publication.configureCommon(
-        GROUP = target.group as String,
-        VERSION_CURRENT = target.version as String,
-        GITHUB_OWNER = GITHUB_OWNER,
-        GITHUB_OWNER_REPO = GITHUB_OWNER_REPO,
-        GITHUB_REPOSITORY = GITHUB_REPOSITORY,
-        DEVELOPER_NAME = DEVELOPER_NAME,
-        DEVELOPER_URL = DEVELOPER_URL
-      )
 
       if (publication.isPluginMarker()) {
 
@@ -86,55 +71,6 @@ public abstract class AntipastoPublishPlugin : Plugin<Project> {
     }
     target.tasks.withType(Sign::class.java).configureEach {
       it.mustRunAfter(target.tasks.withType(Jar::class.java))
-    }
-
-    // @OptIn(InternalGradleApiAccess::class)
-    // target.tasks.whenElementKnown { ele ->
-    //
-    //   if (AbstractPublishToMaven::class.java.isAssignableFrom(ele.elementType)) {
-    //     target.tasks.register(ele.elementName + "NoDokka", AntipastoTask::class.java) {
-    //       it.dependsOn(ele.elementName)
-    //       target.extras.set("skipDokka", true)
-    //     }
-    //   }
-    // }
-  }
-
-  private fun MavenPublication.configureCommon(
-    GROUP: String,
-    VERSION_CURRENT: String,
-    GITHUB_OWNER: String,
-    GITHUB_OWNER_REPO: String,
-    GITHUB_REPOSITORY: String,
-    DEVELOPER_NAME: String,
-    DEVELOPER_URL: String
-  ) {
-
-    groupId = GROUP
-    version = VERSION_CURRENT
-
-    pom { mavenPom ->
-      mavenPom.url.set(GITHUB_REPOSITORY)
-
-      mavenPom.licenses { licenseSpec ->
-        licenseSpec.license { license ->
-          license.name.set("The Apache Software License, Version 2.0")
-          license.url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-          license.distribution.set("repo")
-        }
-      }
-      mavenPom.scm { scm ->
-        scm.url.set(GITHUB_REPOSITORY)
-        scm.connection.set("scm:git:git://github.com/$GITHUB_OWNER_REPO.git")
-        scm.developerConnection.set("scm:git:ssh://git@github.com/$GITHUB_OWNER_REPO.git")
-      }
-      mavenPom.developers { developerSpec ->
-        developerSpec.developer { developer ->
-          developer.id.set(GITHUB_OWNER)
-          developer.name.set(DEVELOPER_NAME)
-          developer.url.set(DEVELOPER_URL)
-        }
-      }
     }
   }
 }

@@ -59,12 +59,13 @@ public abstract class KtLintConventionPlugin : Plugin<Project> {
     if (!Files.isSymbolicLink(editorconfig.toPath())) {
 
       target.tasks.register("updateEditorConfigVersion") { task ->
+        val versionName = target.VERSION_NAME
         task.doLast {
           val oldText = editorconfig.readText()
 
           val reg = """^(kt-rules_project_version *?= *?)\S*$""".toRegex(MULTILINE)
 
-          val newText = oldText.replace(reg, "$1${target.VERSION_NAME}")
+          val newText = oldText.replace(reg, "$1$versionName")
 
           if (newText != oldText) {
             editorconfig.writeText(newText)
