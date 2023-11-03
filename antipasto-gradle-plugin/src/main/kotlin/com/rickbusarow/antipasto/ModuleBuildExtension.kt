@@ -15,6 +15,8 @@
 
 package com.rickbusarow.lattice
 
+import com.rickbusarow.antipasto.composite.DefaultHasCompositeSubExtension
+import com.rickbusarow.antipasto.composite.HasCompositeSubExtension
 import com.rickbusarow.lattice.conventions.AutoServiceExtension
 import com.rickbusarow.lattice.conventions.BuildLogicShadowExtensionHook
 import com.rickbusarow.lattice.conventions.KotlinExtension
@@ -23,10 +25,10 @@ import com.rickbusarow.lattice.conventions.KotlinMultiplatformExtension
 import com.rickbusarow.lattice.conventions.KspExtension
 import com.rickbusarow.lattice.conventions.PokoExtension
 import com.rickbusarow.lattice.conventions.SerializationExtension
-import com.rickbusarow.lattice.publishing.DefaultPublishingGradleHandler
+import com.rickbusarow.lattice.publishing.DefaultPublishingGradlePluginHandler
 import com.rickbusarow.lattice.publishing.DefaultPublishingMavenHandler
 import com.rickbusarow.lattice.publishing.PublishingExtension
-import com.rickbusarow.lattice.publishing.PublishingGradleHandler
+import com.rickbusarow.lattice.publishing.PublishingGradlePluginHandler
 import com.rickbusarow.lattice.publishing.PublishingMavenHandler
 import org.gradle.api.model.ObjectFactory
 import javax.inject.Inject
@@ -34,7 +36,7 @@ import javax.inject.Inject
 @Suppress("UndocumentedPublicClass")
 public abstract class RootExtension @Inject constructor(
   private val objects: ObjectFactory
-) : CompositeHandler by objects.newInstance<DefaultCompositeHandler>(),
+) : HasCompositeSubExtension by objects.newInstance<DefaultHasCompositeSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KspExtension,
@@ -45,7 +47,7 @@ public abstract class RootExtension @Inject constructor(
 @Suppress("UndocumentedPublicClass")
 public abstract class GradlePluginModuleExtension @Inject constructor(
   private val objects: ObjectFactory
-) : PublishingGradleHandler by objects.newInstance<DefaultPublishingGradleHandler>(),
+) : PublishingGradlePluginHandler by objects.newInstance<DefaultPublishingGradlePluginHandler>(),
   PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,

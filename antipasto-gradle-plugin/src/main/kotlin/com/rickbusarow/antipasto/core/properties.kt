@@ -64,16 +64,16 @@ public val Project.JVM_TARGET_INT: Int
  *
  * "1.6", "1.8", "11", etc.
  */
-public val Project.JDK: String
-  get() = property("JDK") as String
+public val Project.JVM_TOOLCHAIN: String
+  get() = property("JVM_TOOLCHAIN") as String
 
 /**
  * the jdk used to build the project
  *
  * "1.6", "1.8", "11", etc.
  */
-internal val Project.JDK_INT: Int
-  get() = JDK.substringAfterLast('.').toInt()
+internal val Project.JVM_TOOLCHAIN_INT: Int
+  get() = JVM_TOOLCHAIN.substringAfterLast('.').toInt()
 
 /**
  * Finds a property that's prefixed with the 'commonPrefix'

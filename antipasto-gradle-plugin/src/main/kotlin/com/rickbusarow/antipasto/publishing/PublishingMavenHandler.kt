@@ -16,26 +16,29 @@
 package com.rickbusarow.antipasto.publishing
 
 import com.rickbusarow.antipasto.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
-import com.rickbusarow.antipasto.conventions.applyBinaryCompatibility
-import com.rickbusarow.antipasto.core.GITHUB_OWNER
-import com.rickbusarow.antipasto.core.GITHUB_OWNER_REPO
-import com.rickbusarow.antipasto.core.GITHUB_REPOSITORY
 import com.rickbusarow.antipasto.core.GROUP
 import com.rickbusarow.antipasto.core.VERSION_NAME
-import com.rickbusarow.kgx.extras
-import com.rickbusarow.kgx.getOrPut
 import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
 import org.gradle.plugins.signing.Sign
+import org.jetbrains.kotlin.gradle.utils.property
 import javax.inject.Inject
 
 public interface PublishingMavenHandler : java.io.Serializable {
+
+  public val defaultPom: MavenPom
+
+  public fun defaultPom(action: Action<in MavenPom>) {
+    action.execute(defaultPom)
+  }
+
   public fun publishMaven(artifactId: String, pomDescription: String)
   public fun publishMaven(
     groupId: String,
@@ -49,6 +52,43 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
 ) : PublishingMavenHandler {
+
+  private val settings by property {
+    objects.newInstance(Settings::class.java)
+  }
+
+  override val defaultPom: DefaultMavenPom by property {
+    objects.newInstance(DefaultMavenPom::class.java)
+      .also { pom ->
+        pom.url.convention(settings.publishing.POM_URL)
+        pom.name.convention(settings.publishing.POM_NAME)
+
+        pom.description.convention(settings.publishing.POM_DESCRIPTION)
+        pom.inceptionYear.convention(settings.publishing.POM_INCEPTION_YEAR)
+
+        pom.licenses { licenseSpec ->
+          licenseSpec.license { license ->
+            license.name.convention(settings.publishing.POM_LICENSE_NAME)
+            license.url.convention(settings.publishing.POM_LICENSE_URL)
+            license.distribution.convention(settings.publishing.POM_LICENSE_DIST)
+          }
+        }
+
+        pom.scm { scm ->
+          scm.url.convention(settings.publishing.POM_SCM_URL)
+          scm.connection.convention(settings.publishing.POM_SCM_CONNECTION)
+          scm.developerConnection.convention(settings.publishing.POM_SCM_DEV_CONNECTION)
+        }
+
+        pom.developers { developerSpec ->
+          developerSpec.developer { developer ->
+            developer.id.convention(settings.publishing.POM_DEVELOPER_ID)
+            developer.name.convention(settings.publishing.POM_DEVELOPER_NAME)
+            developer.url.convention(settings.publishing.POM_DEVELOPER_URL)
+          }
+        }
+      }
+  }
 
   override fun publishMaven(artifactId: String, pomDescription: String) {
     publishMaven(
@@ -74,52 +114,15 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
   }
 
   @Suppress("UnstableApiUsage")
-  public fun Project.publishMaven(
+  private fun Project.publishMaven(
+    publicationName: String = "maven",
     groupId: String,
     artifactId: String,
     pomDescription: String,
     versionName: String
   ) {
 
-    target.version = versionName
-    target.group = groupId
-
-    applyBinaryCompatibility()
-
-    target.mavenPublishBaseExtension.pom { mavenPom ->
-      mavenPom.description.set(pomDescription)
-      mavenPom.name.set(artifactId)
-
-      mavenPom.url.set(GITHUB_REPOSITORY)
-
-      mavenPom.licenses { licenseSpec ->
-        licenseSpec.license { license ->
-          license.name.set("The Apache Software License, Version 2.0")
-          license.url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-          license.distribution.set("repo")
-        }
-      }
-      mavenPom.scm { scm ->
-        scm.url.set("https://www.github.com/$GITHUB_OWNER_REPO/")
-        scm.connection.set("scm:git:git://github.com/$GITHUB_OWNER_REPO.git")
-        scm.developerConnection.set("scm:git:ssh://git@github.com/$GITHUB_OWNER_REPO.git")
-      }
-      mavenPom.developers { developerSpec ->
-        developerSpec.developer { developer ->
-          developer.id.set(GITHUB_OWNER)
-          developer.name.set(property("DEVELOPER_NAME") as String)
-          developer.url.set(property("DEVELOPER_URL") as String)
-        }
-      }
-    }
-
-    val sd = target.extras.getOrPut("skipDokka") { false }
-
-    val javadocJar = if (sd) {
-      JavadocJar.None()
-    } else {
-      Dokka(taskName = DOKKATOO_HTML_TASK_NAME)
-    }
+    val javadocJar = Dokka(taskName = DOKKATOO_HTML_TASK_NAME)
 
     when {
       // The plugin-publish plugin handles its artifacts
@@ -145,14 +148,56 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
       }
     }
 
-    extensions.configure(PublishingExtension::class.java) { publishingExtension ->
-      publishingExtension.publications
-        .withType(MavenPublication::class.java)
-        .configureEach { publication ->
-          publication.artifactId = artifactId
-          publication.pom.description.set(pomDescription)
-          publication.groupId = groupId
+    val publications = gradlePublishingExtension.publications
+
+    val mavenPublication = if (publications.names.contains(publicationName)) {
+      publications.named(publicationName, MavenPublication::class.java)
+    } else {
+      publications.register(publicationName, MavenPublication::class.java)
+    }
+
+    mavenPublication.configure { publication ->
+      publication.artifactId = artifactId
+      publication.pom.description.set(pomDescription)
+      publication.groupId = groupId
+      publication.version = versionName
+
+      val default = defaultPom
+
+      publication.pom { mavenPom ->
+
+        mavenPom.url.convention(default.url)
+        mavenPom.name.convention(default.name)
+        mavenPom.description.convention(default.description)
+        mavenPom.inceptionYear.convention(default.inceptionYear)
+
+        mavenPom.licenses { licenseSpec ->
+
+          for (defaultLicense in default.licenses) {
+            licenseSpec.license { license ->
+              license.name.convention(defaultLicense.name)
+              license.url.convention(defaultLicense.url)
+              license.distribution.convention(defaultLicense.distribution)
+            }
+          }
         }
+
+        mavenPom.scm { scm ->
+          default.scm?.url?.let { scm.url.convention(it) }
+          default.scm?.connection?.let { scm.connection.convention(it) }
+          default.scm?.developerConnection?.let { scm.developerConnection.convention(it) }
+        }
+
+        mavenPom.developers { developerSpec ->
+          for (defaultDeveloper in default.developers) {
+            developerSpec.developer { developer ->
+              developer.id.convention(defaultDeveloper.id)
+              developer.name.convention(defaultDeveloper.name)
+              developer.url.convention(defaultDeveloper.url)
+            }
+          }
+        }
+      }
     }
 
     // registerSnapshotVersionCheckTask()

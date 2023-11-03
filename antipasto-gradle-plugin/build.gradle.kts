@@ -70,7 +70,6 @@ val GITHUB_OWNER: String by project
 val DEVELOPER_URL: String by project
 val DEVELOPER_NAME: String by project
 val GITHUB_OWNER_REPO: String by project
-val GITHUB_REPOSITORY: String by project
 
 fun PluginDeclaration.tags(vararg v: String) {
   @Suppress("UnstableApiUsage")
@@ -78,11 +77,6 @@ fun PluginDeclaration.tags(vararg v: String) {
 }
 
 gradlePlugin {
-
-  @Suppress("UnstableApiUsage")
-  vcsUrl.set(GITHUB_REPOSITORY)
-  @Suppress("UnstableApiUsage")
-  website.set(GITHUB_REPOSITORY)
 
   plugins {
 
@@ -94,7 +88,7 @@ gradlePlugin {
     }
     register("composite") {
       id = "com.rickbusarow.antipasto.composite"
-      implementationClass = "com.rickbusarow.antipasto.CompositePlugin"
+      implementationClass = "com.rickbusarow.antipasto.composite.CompositePlugin"
       description = "Convention plugin for making composite Gradle builds easier"
       tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
     }
@@ -122,6 +116,15 @@ if (rootProject.name == "antipasto") {
   apply(plugin = "com.rickbusarow.antipasto.java-gradle-plugin")
 
   apply(plugin = libs.plugins.vanniktech.publish.get().pluginId)
+
+  gradlePlugin {
+
+    val GITHUB_REPOSITORY: String by project
+    @Suppress("UnstableApiUsage")
+    vcsUrl.set(GITHUB_REPOSITORY)
+    @Suppress("UnstableApiUsage")
+    website.set(GITHUB_REPOSITORY)
+  }
 
   fun MavenPublication.isPluginMarker(): Boolean = name.endsWith("PluginMarkerMaven")
   fun Publication.isPluginMarker(): Boolean = (this as? MavenPublication)?.isPluginMarker() ?: false

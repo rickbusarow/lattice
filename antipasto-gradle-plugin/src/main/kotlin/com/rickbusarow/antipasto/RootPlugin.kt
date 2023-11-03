@@ -15,6 +15,12 @@
 
 package com.rickbusarow.lattice
 
+import com.rickbusarow.antipasto.composite.CompositePlugin
+import com.rickbusarow.antipasto.conventions.BenManesVersionsPlugin
+import com.rickbusarow.antipasto.conventions.DokkaVersionArchivePlugin
+import com.rickbusarow.antipasto.conventions.GitHubReleasePlugin
+import com.rickbusarow.antipasto.conventions.SpotlessConventionPlugin
+import com.rickbusarow.antipasto.curator.CuratorPlugin
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.inCI
 import com.rickbusarow.kgx.internal.InternalGradleApiAccess

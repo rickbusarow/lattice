@@ -21,14 +21,14 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.plugin.devel.PluginDeclaration
 import javax.inject.Inject
 
-public interface PublishingGradleHandler : java.io.Serializable {
+public interface PublishingGradlePluginHandler : java.io.Serializable {
   public fun publishPlugin(pluginDeclaration: NamedDomainObjectProvider<PluginDeclaration>)
 }
 
-public open class DefaultPublishingGradleHandler @Inject constructor(
+public open class DefaultPublishingGradlePluginHandler @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
-) : PublishingGradleHandler {
+) : PublishingGradlePluginHandler {
 
   override fun publishPlugin(pluginDeclaration: NamedDomainObjectProvider<PluginDeclaration>) {
     TODO()

@@ -15,27 +15,32 @@
 
 package com.rickbusarow.lattice
 
-import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
-import org.gradle.api.Project
-import org.gradle.api.plugins.ExtraPropertiesExtension
-import kotlin.properties.ReadOnlyProperty
+import org.gradle.api.NamedDomainObjectCollectionSchema.NamedDomainObjectSchema
+import org.gradle.api.tasks.TaskCollection
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
-internal fun Project.taskWillResolveInAny(taskName: String): Boolean {
-  return allprojects.any { it.taskWillResolve(taskName) }
-}
+/** @throws IllegalArgumentException if the task name is ambiguous when case is ignored */
+internal fun TaskCollection<*>.namedOrNull(taskName: String): NamedDomainObjectSchema? {
 
-internal fun Project.taskWillResolve(taskName: String): Boolean {
-
-  val taskNamesLowercase by extras.getOrPut {
-    tasks.names.mapTo(mutableSetOf(), String::lowercase)
+  val namesLowercase = extraProperties.getOrPut("taskNamesLowercase") {
+    collectionSchema.elements.groupBy { it.name.lowercase() }
   }
 
-  return tasks.names.contains(taskName) || taskNamesLowercase.contains(taskName.lowercase())
-}
+  val taskNameLowercase = taskName.lowercase()
 
-private inline fun <reified T> ExtraPropertiesExtension.getOrPut(
-  crossinline block: () -> T
-): ReadOnlyProperty<Any?, T> = ReadOnlyProperty { _, property ->
-  getOrPut(property.name) { block() }
+  val matches = namesLowercase[taskNameLowercase] ?: return null
+
+  val exactMatch = matches.singleOrNull { it.name == taskName }
+
+  if (exactMatch != null) {
+    return exactMatch
+  }
+
+  require(matches.size == 1) {
+    "Task name '$taskName' is ambiguous.  " +
+      "It matches multiple tasks: ${matches.map { it.name }}"
+  }
+
+  return matches.single()
 }

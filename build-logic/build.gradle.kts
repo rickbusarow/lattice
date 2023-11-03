@@ -41,12 +41,12 @@ subprojects sub@{
 }
 
 allprojects ap@{
-  version = property("VERSION_NAME") as String
+  // version = property("VERSION_NAME") as String
 
   plugins.withType(KotlinBasePlugin::class.java).configureEach {
 
-    val jdk = project.property("JDK_BUILD_LOGIC").toString()
-    val target = property("JVM_TARGET_BUILD_LOGIC").toString()
+    val jdk = project.property("JVM_TOOLCHAIN").toString()
+    val target = property("JVM_TARGET").toString()
 
     extensions.configure(KotlinJvmProjectExtension::class.java) {
       jvmToolchain {

@@ -44,7 +44,7 @@ public abstract class SpotlessConventionPlugin : Plugin<Project> {
       spotlessTask.mustRunAfter(":curatorDump")
 
       target.allprojects
-        .filter { it.plugins.hasPlugin(PluginIds.kotlinx.compatibility.validator) }
+        .filter { it.plugins.hasPlugin(PluginIds.kotlinx.binary.compatibility.validator) }
         .forEach { subproject ->
           spotlessTask.mustRunAfter(subproject.tasks.named("apiDump"))
         }
