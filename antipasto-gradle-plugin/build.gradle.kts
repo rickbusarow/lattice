@@ -150,9 +150,11 @@ if (rootProject.name == "antipasto") {
   }
 
   tasks.register("publishToBuildM2") {
+    group = "Publishing"
     dependsOn("publishAllPublicationsToBuildM2Repository")
   }
   tasks.register("publishToBuildM2NoDokka") {
+    group = "Publishing"
     project.extras.set("skipDokka", true)
     dependsOn("publishAllPublicationsToBuildM2Repository")
   }
