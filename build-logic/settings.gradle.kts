@@ -17,12 +17,12 @@ rootProject.name = "build-logic"
 
 pluginManagement {
   val allowMavenLocal = providers
-    .gradleProperty("antipasto.allow-maven-local")
+    .gradleProperty("lattice.allow-maven-local")
     .orNull.toBoolean()
 
   repositories {
     if (allowMavenLocal) {
-      logger.lifecycle("antipasto -- allowing mavenLocal for plugins")
+      logger.lifecycle("lattice -- allowing mavenLocal for plugins")
       mavenLocal()
     }
     gradlePluginPortal()
@@ -32,14 +32,14 @@ pluginManagement {
 }
 
 val allowMavenLocal = providers
-  .gradleProperty("antipasto.allow-maven-local")
+  .gradleProperty("lattice.allow-maven-local")
   .orNull.toBoolean()
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
   repositories {
     if (allowMavenLocal) {
-      logger.lifecycle("antipasto -- allowing mavenLocal for dependencies")
+      logger.lifecycle("lattice -- allowing mavenLocal for dependencies")
       mavenLocal()
     }
     gradlePluginPortal()
@@ -55,7 +55,7 @@ dependencyResolutionManagement {
 
 includeBuild("../../kgx")
 listOf(
-  "antipasto-gradle-plugin"
+  "lattice-gradle-plugin"
 ).forEach { name ->
   include(":$name")
   project(":$name").projectDir = file("../$name")

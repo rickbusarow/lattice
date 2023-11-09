@@ -27,8 +27,8 @@ plugins {
   alias(libs.plugins.doks)
   alias(libs.plugins.vanniktech.publish) apply false
   alias(libs.plugins.moduleCheck)
-  id("com.rickbusarow.antipasto.kotlin-jvm") apply false
-  id("com.rickbusarow.antipasto.root")
+  id("com.rickbusarow.lattice.kotlin-jvm") apply false
+  id("com.rickbusarow.lattice.root")
   base
 }
 
@@ -37,7 +37,7 @@ moduleCheck {
   checks.sortDependencies = true
 }
 
-antipasto {
+lattice {
 }
 
 val ktlintPluginId = libs.plugins.ktlint.get().pluginId

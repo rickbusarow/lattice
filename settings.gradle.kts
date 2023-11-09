@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "antipasto"
+rootProject.name = "lattice"
 
 pluginManagement {
   repositories {
@@ -33,8 +33,8 @@ pluginManagement {
   includeBuild("../kgx")
 
   plugins {
-    id("com.rickbusarow.antipasto.jvm-module") apply false
-    id("com.rickbusarow.antipasto.root") apply false
+    id("com.rickbusarow.lattice.jvm-module") apply false
+    id("com.rickbusarow.lattice.root") apply false
   }
 }
 
@@ -83,7 +83,7 @@ gradleEnterprise {
   }
 }
 
-include(":antipasto-gradle-plugin")
+include(":lattice-gradle-plugin")
 
 includeBuild("build-logic")
 includeBuild("../kgx")
