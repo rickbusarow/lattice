@@ -104,8 +104,7 @@ internal fun Project.getPrefixedPropertyName(propertySuffix: String): String {
 }
 
 /**
- * The common prefix used for all project properties,
- * like `lattice` in `lattice.allow-maven-local`.
+ * The common prefix used for all project properties, like `lattice` in `lattice.allow-maven-local`.
  */
 internal val Project.commonPropertyPrefix: String
   get() = (findProperty("commonPrefix") ?: group) as String
