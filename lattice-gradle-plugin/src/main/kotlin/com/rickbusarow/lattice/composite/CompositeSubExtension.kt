@@ -15,7 +15,9 @@
 
 package com.rickbusarow.lattice.composite
 
+import com.rickbusarow.lattice.core.SubExtension
 import dev.drewhamilton.poko.Poko
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.reflect.TypeOf
@@ -26,9 +28,13 @@ import javax.inject.Inject
 
 @Suppress("UndocumentedPublicClass")
 public interface HasCompositeSubExtension : java.io.Serializable {
-  /**
-   */
+  /** */
   public val composite: CompositeSubExtension
+
+  /** Eagerly configures this extension. */
+  public fun composite(action: Action<in CompositeSubExtension>) {
+    action.execute(composite)
+  }
 }
 
 @Suppress("UndocumentedPublicClass")
@@ -46,7 +52,7 @@ public abstract class DefaultHasCompositeSubExtension @Inject constructor(
 public open class CompositeSubExtension @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
-) {
+) : SubExtension<CompositeSubExtension> {
 
   internal var includeRequested: AndSpec<RequestedTask> = AndSpec()
   public fun includeRequested(spec: Spec<RequestedTask>) {

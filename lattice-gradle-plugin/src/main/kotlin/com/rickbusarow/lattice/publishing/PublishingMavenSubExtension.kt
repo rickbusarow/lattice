@@ -16,8 +16,7 @@
 package com.rickbusarow.lattice.publishing
 
 import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
-import com.rickbusarow.lattice.core.GROUP
-import com.rickbusarow.lattice.core.VERSION_NAME
+import com.rickbusarow.lattice.core.SubExtension
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinJvm
@@ -31,30 +30,48 @@ import org.gradle.plugins.signing.Sign
 import org.jetbrains.kotlin.gradle.utils.property
 import javax.inject.Inject
 
-public interface PublishingMavenHandler : java.io.Serializable {
+public interface HasPublishingMavenSubExtension : java.io.Serializable {
 
-  public val defaultPom: MavenPom
+  public val publishing: PublishingMavenSubExtension
 
-  public fun defaultPom(action: Action<in MavenPom>) {
-    action.execute(defaultPom)
+  /** Eagerly configures this extension. */
+  public fun publishing(action: Action<in PublishingMavenSubExtension>) {
+    action.execute(publishing)
   }
+}
 
-  public fun publishMaven(artifactId: String, pomDescription: String)
+public abstract class DefaultHasPublishingMavenSubExtension @Inject constructor(
+  private val target: Project,
+  private val objects: ObjectFactory
+) : HasPublishingMavenSubExtension {
+
+  override val publishing: PublishingMavenSubExtension by property {
+    objects.newInstance(DefaultPublishingMavenSubExtension::class.java)
+  }
+}
+
+public interface PublishingMavenSubExtension : SubExtension<PublishingMavenSubExtension> {
+  public val defaultPom: DefaultMavenPom
+  public fun defaultPom(action: Action<in MavenPom>)
   public fun publishMaven(
-    groupId: String,
-    artifactId: String,
-    pomDescription: String,
-    versionName: String
+    groupId: String? = null,
+    artifactId: String? = null,
+    pomDescription: String? = null,
+    versionName: String? = null
   )
 }
 
-public open class DefaultPublishingMavenHandler @Inject constructor(
+public open class DefaultPublishingMavenSubExtension @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
-) : PublishingMavenHandler {
+) : PublishingMavenSubExtension {
 
   private val settings by property {
     objects.newInstance(Settings::class.java)
+  }
+
+  override fun defaultPom(action: Action<in MavenPom>) {
+    action.execute(defaultPom)
   }
 
   override val defaultPom: DefaultMavenPom by property {
@@ -90,26 +107,19 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
       }
   }
 
-  override fun publishMaven(artifactId: String, pomDescription: String) {
-    publishMaven(
-      groupId = target.GROUP,
-      artifactId = artifactId,
-      pomDescription = pomDescription,
-      versionName = target.VERSION_NAME
-    )
-  }
-
   override fun publishMaven(
-    groupId: String,
-    artifactId: String,
-    pomDescription: String,
-    versionName: String
+    groupId: String?,
+    artifactId: String?,
+    pomDescription: String?,
+    versionName: String?
   ) {
+
     target.publishMaven(
-      groupId = groupId,
-      artifactId = artifactId,
-      pomDescription = pomDescription,
-      versionName = versionName
+      groupId = groupId ?: target.group.toString(),
+      artifactId = artifactId ?: settings.publishing.POM_ARTIFACT_ID.orNull ?: target.name,
+      pomDescription = pomDescription ?: settings.publishing.POM_DESCRIPTION.orNull
+        ?: target.description,
+      versionName = versionName ?: settings.VERSION_NAME.orNull ?: target.version.toString()
     )
   }
 
@@ -118,7 +128,7 @@ public open class DefaultPublishingMavenHandler @Inject constructor(
     publicationName: String = "maven",
     groupId: String,
     artifactId: String,
-    pomDescription: String,
+    pomDescription: String?,
     versionName: String
   ) {
 

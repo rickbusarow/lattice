@@ -25,11 +25,11 @@ import com.rickbusarow.lattice.conventions.KotlinMultiplatformExtension
 import com.rickbusarow.lattice.conventions.KspExtension
 import com.rickbusarow.lattice.conventions.PokoExtension
 import com.rickbusarow.lattice.conventions.SerializationExtension
+import com.rickbusarow.lattice.publishing.DefaultHasPublishingMavenSubExtension
 import com.rickbusarow.lattice.publishing.DefaultPublishingGradlePluginHandler
-import com.rickbusarow.lattice.publishing.DefaultPublishingMavenHandler
+import com.rickbusarow.lattice.publishing.HasPublishingMavenSubExtension
 import com.rickbusarow.lattice.publishing.PublishingExtension
 import com.rickbusarow.lattice.publishing.PublishingGradlePluginHandler
-import com.rickbusarow.lattice.publishing.PublishingMavenHandler
 import org.gradle.api.model.ObjectFactory
 import javax.inject.Inject
 
@@ -47,8 +47,9 @@ public abstract class RootExtension @Inject constructor(
 @Suppress("UndocumentedPublicClass")
 public abstract class GradlePluginModuleExtension @Inject constructor(
   private val objects: ObjectFactory
-) : PublishingGradlePluginHandler by objects.newInstance<DefaultPublishingGradlePluginHandler>(),
-  PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>(),
+) :
+  PublishingGradlePluginHandler by objects.newInstance<DefaultPublishingGradlePluginHandler>(),
+  HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,
@@ -60,7 +61,7 @@ public abstract class GradlePluginModuleExtension @Inject constructor(
 @Suppress("UndocumentedPublicClass")
 public abstract class KotlinJvmModuleExtension @Inject constructor(
   private val objects: ObjectFactory
-) : PublishingMavenHandler by objects.newInstance<DefaultPublishingMavenHandler>(),
+) : HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,

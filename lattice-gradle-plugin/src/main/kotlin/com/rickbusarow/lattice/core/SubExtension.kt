@@ -18,15 +18,10 @@ package com.rickbusarow.lattice.core
 import org.gradle.api.Action
 
 /** Convenience interface for making a configurable group of settings. */
-public interface SubExtension<SELF : SubExtension<SELF>> {
-  /** Eagerly configures this extension. */
-  public operator fun invoke(action: Action<in SELF>) {
+public interface SubExtension<SELF : SubExtension<SELF>> : java.io.Serializable {
+
+  public fun configure(action: Action<in SELF>) {
     @Suppress("UNCHECKED_CAST")
     action.execute(this as SELF)
-  }
-
-  /** alias for [SubExtension.invoke] */
-  public fun configure(action: Action<in SELF>) {
-    invoke(action)
   }
 }
