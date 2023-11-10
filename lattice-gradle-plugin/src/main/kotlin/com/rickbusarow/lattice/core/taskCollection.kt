@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.rickbusarow.lattice
+package com.rickbusarow.lattice.core
 
 import com.rickbusarow.kgx.getOrPut
 import org.gradle.api.NamedDomainObjectCollectionSchema.NamedDomainObjectSchema

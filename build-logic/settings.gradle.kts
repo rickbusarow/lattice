@@ -53,10 +53,7 @@ dependencyResolutionManagement {
   }
 }
 
-includeBuild("../../kgx")
-listOf(
-  "lattice-gradle-plugin"
-).forEach { name ->
+listOf("lattice-gradle-plugin").forEach { name ->
   include(":$name")
   project(":$name").projectDir = file("../$name")
 }

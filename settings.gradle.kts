@@ -30,7 +30,6 @@ pluginManagement {
   }
 
   includeBuild("build-logic")
-  includeBuild("../kgx")
 
   plugins {
     id("com.rickbusarow.lattice.jvm-module") apply false
@@ -86,4 +85,3 @@ gradleEnterprise {
 include(":lattice-gradle-plugin")
 
 includeBuild("build-logic")
-includeBuild("../kgx")

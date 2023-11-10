@@ -21,8 +21,8 @@ import com.rickbusarow.kgx.internal.allIncludedProjects
 import com.rickbusarow.lattice.RootExtension
 import com.rickbusarow.lattice.composite.CompositeSubExtension.RequestedTask
 import com.rickbusarow.lattice.composite.CompositeSubExtension.ResolvedTask
+import com.rickbusarow.lattice.core.namedOrNull
 import com.rickbusarow.lattice.core.splitInclusive
-import com.rickbusarow.lattice.namedOrNull
 import modulecheck.utils.mapToSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
