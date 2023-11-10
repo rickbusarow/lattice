@@ -36,7 +36,7 @@ public abstract class CleanPlugin : Plugin<Project> {
         task.description = "Delete all empty directories within a project."
 
         val subprojectDirs = target.subprojects
-          .map { it.projectDir.path }
+          .mapTo(mutableSetOf()) { it.projectDir.absolutePath }
 
         val projectDir = target.projectDir
 
