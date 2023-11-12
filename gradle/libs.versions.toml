@@ -29,12 +29,14 @@ rickBusarow-github-release = "2.5.2"
 rickBusarow-kgx = "0.1.8"
 rickBusarow-ktlint = "0.2.1"
 rickBusarow-ktrules = "1.2.1"
+rickBusarow-lattice = "0.1.0-SNAPSHOT"
 rickBusarow-moduleCheck = "0.12.5"
 square-kotlinPoet = "1.14.2"
 square-okio = "3.6.0"
 vanniktech-publish = "0.25.3"
 
 [plugins]
+
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 dokkatoo = { id = "dev.adamko.dokkatoo", version.ref = "dokkatoo" }
@@ -45,9 +47,16 @@ integration-test = { id = "com.coditory.integration-test", version.ref = "integr
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = { id = "com.rickbusarow.ktlint", version.ref = "rickBusarow-ktlint" }
+
+lattice-composite = { id = "com.rickbusarow.lattice.composite", version.ref = "rickBusarow-lattice" }
+lattice-java-gradle-plugin = { id = "com.rickbusarow.lattice.java-gradle-plugin", version.ref = "rickBusarow-lattice" }
+lattice-kotlin-jvm = { id = "com.rickbusarow.lattice.kotlin-jvm", version.ref = "rickBusarow-lattice" }
+lattice-kotlin-multiplatform = { id = "com.rickbusarow.lattice.kotlin-multiplatform", version.ref = "rickBusarow-lattice" }
+lattice-root = { id = "com.rickbusarow.lattice.root", version.ref = "rickBusarow-lattice" }
+
 moduleCheck = { id = "com.rickbusarow.module-check", version.ref = "rickBusarow-moduleCheck" }
-poko = { id = "dev.drewhamilton.poko", version.ref = "poko" }
 plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+poko = { id = "dev.drewhamilton.poko", version.ref = "poko" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "johnrengelman-shadow" }
 vanniktech-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "vanniktech-publish" }
 

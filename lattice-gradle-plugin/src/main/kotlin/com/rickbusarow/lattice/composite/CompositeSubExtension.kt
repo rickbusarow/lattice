@@ -26,18 +26,15 @@ import org.gradle.api.specs.Spec
 import org.jetbrains.kotlin.gradle.utils.property
 import javax.inject.Inject
 
-@Suppress("UndocumentedPublicClass")
 public interface HasCompositeSubExtension : java.io.Serializable {
   /** */
   public val composite: CompositeSubExtension
 
-  /** Eagerly configures this extension. */
   public fun composite(action: Action<in CompositeSubExtension>) {
     action.execute(composite)
   }
 }
 
-@Suppress("UndocumentedPublicClass")
 public abstract class DefaultHasCompositeSubExtension @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
@@ -48,8 +45,7 @@ public abstract class DefaultHasCompositeSubExtension @Inject constructor(
   }
 }
 
-@Suppress("UndocumentedPublicClass")
-public open class CompositeSubExtension @Inject constructor(
+public abstract class CompositeSubExtension @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
 ) : SubExtension<CompositeSubExtension> {

@@ -17,10 +17,10 @@ package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.dependOn
-import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
 import com.rickbusarow.lattice.core.VERSION_NAME
 import com.rickbusarow.lattice.core.versionIsSnapshot
 import com.rickbusarow.lattice.core.zipContentEquals
+import com.rickbusarow.lattice.dokka.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -28,7 +28,6 @@ import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.bundling.Zip
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 
-@Suppress("UndocumentedPublicClass")
 public abstract class DokkaVersionArchivePlugin : Plugin<Project> {
   override fun apply(target: Project) {
 

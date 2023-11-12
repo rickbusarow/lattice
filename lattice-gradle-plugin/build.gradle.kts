@@ -30,6 +30,17 @@ plugins {
   alias(libs.plugins.poko)
   alias(libs.plugins.plugin.publish)
   alias(libs.plugins.vanniktech.publish) apply false
+  alias(libs.plugins.buildconfig)
+}
+
+buildConfig {
+  packageName.set("com.rickbusarow.lattice")
+  useKotlinOutput {
+    internalVisibility = true
+    // topLevelConstants = true
+  }
+
+  buildConfigField("String", "pokoVersion", "\"${libs.versions.poko.get()}\"")
 }
 
 dependencies {
@@ -65,6 +76,7 @@ dependencies {
     exclude(group = "org.jetbrains.kotlin")
   }
   implementation(libs.vanniktech.publish)
+  implementation(libs.vanniktech.publish.nexus)
 }
 
 val GITHUB_OWNER: String by project
@@ -113,9 +125,10 @@ gradlePlugin {
     }
   }
 }
-if (rootProject.name == "lattice") {
-  apply(plugin = "com.rickbusarow.lattice.java-gradle-plugin")
 
+if (rootProject.name == "lattice") {
+
+  apply(plugin = "com.rickbusarow.lattice.java-gradle-plugin")
   apply(plugin = libs.plugins.vanniktech.publish.get().pluginId)
 
   gradlePlugin {

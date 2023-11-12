@@ -25,7 +25,6 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import java.io.File
 
-@Suppress("UndocumentedPublicClass")
 public abstract class CleanPlugin : Plugin<Project> {
   override fun apply(target: Project) {
 

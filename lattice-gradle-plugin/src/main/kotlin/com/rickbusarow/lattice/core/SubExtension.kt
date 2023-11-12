@@ -16,12 +16,25 @@
 package com.rickbusarow.lattice.core
 
 import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.plugins.ExtensionAware
 
 /** Convenience interface for making a configurable group of settings. */
-public interface SubExtension<SELF : SubExtension<SELF>> : java.io.Serializable {
+public interface SubExtension<SELF : SubExtension<SELF>> :
+  ExtensionAware,
+  java.io.Serializable {
 
   public fun configure(action: Action<in SELF>) {
     @Suppress("UNCHECKED_CAST")
     action.execute(this as SELF)
   }
 }
+
+public interface HasObjectFactory {
+  public val objects: ObjectFactory
+}
+
+public interface SubExtensionInternal : HasObjectFactory
+
+public typealias GradleSourceSet = org.gradle.api.tasks.SourceSet
+public typealias KotlinSourceSet = org.jetbrains.kotlin.gradle.model.SourceSet

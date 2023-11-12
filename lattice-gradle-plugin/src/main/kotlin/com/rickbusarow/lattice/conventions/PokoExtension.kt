@@ -15,13 +15,21 @@
 
 package com.rickbusarow.lattice.conventions
 
-import com.rickbusarow.kgx.dependency
-import com.rickbusarow.kgx.libsCatalog
-import com.rickbusarow.kgx.pluginId
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleVersionSelector
 
-@Suppress("UndocumentedPublicClass")
+public interface HasCodeGenExtension {
+  public val codeGen: CodeGenSubExtension
+}
+
+public interface CodeGenSubExtension {
+  // public val generate: GenerateExtension
+}
+
+public interface HasPokoExtension {
+  public val poko: PokoExtension
+}
+
 public interface PokoExtension {
 
   @Suppress("UndocumentedPublicFunction")
@@ -30,13 +38,11 @@ public interface PokoExtension {
     val implementation = configurations.getByName("implementation")
     val testCompileOnly = configurations.getByName("testCompileOnly")
 
-    val pokoAnnotationsProvider = project.libsCatalog.dependency("poko-annotations")
-    val pokoAnnotations = pokoAnnotationsProvider.get()
-    val pokoAnnotationsModule = pokoAnnotations.module
+    val pokoAnnotationsModule = "dev.drewhamilton.poko:poko-annotations"
 
     implementation.withDependencies { deps ->
       deps.removeIf {
-        pokoAnnotationsModule == (it as? ModuleVersionSelector)?.module
+        pokoAnnotationsModule == (it as? ModuleVersionSelector)?.module?.toString()
       }
     }
 
@@ -44,9 +50,9 @@ public interface PokoExtension {
 
     // Poko adds its annotation artifact as 'implementation', which is unnecessary.
     // Replace it with a 'compileOnly' dependency.
-    compileOnly.dependencies.addLater(pokoAnnotationsProvider)
-    testCompileOnly.dependencies.addLater(pokoAnnotationsProvider)
+    // compileOnly.dependencies.addLater(pokoAnnotationsProvider)
+    // testCompileOnly.dependencies.addLater(pokoAnnotationsProvider)
 
-    pluginManager.apply(libsCatalog.pluginId("poko"))
+    pluginManager.apply("dev.drewhamilton.poko")
   }
 }

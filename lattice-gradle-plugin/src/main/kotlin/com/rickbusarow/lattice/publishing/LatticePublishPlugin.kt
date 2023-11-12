@@ -15,17 +15,19 @@
 
 package com.rickbusarow.lattice.publishing
 
-import com.rickbusarow.kgx.extras
-import com.rickbusarow.kgx.getOrPut
-import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
+import com.rickbusarow.kgx.registerOnce
+import com.rickbusarow.lattice.conventions.DefaultCheckTask
 import com.rickbusarow.lattice.conventions.applyBinaryCompatibility
 import com.rickbusarow.lattice.core.PluginIds
 import com.vanniktech.maven.publish.SonatypeHost
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
-import org.gradle.api.tasks.bundling.Jar
+import org.gradle.jvm.tasks.Jar
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.plugins.signing.Sign
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -55,14 +57,12 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
       }
     }
 
-    target.tasks.withType(Jar::class.java).configureEach {
-      val skipDokka = target.extras.getOrPut("skipDokka") { false }
+    target.registerCoordinatesStringsCheckTask(
+      groupId = target.group.toString(),
+      mavenPublications = target.mavenPublications
+    )
+    target.registerSnapshotVersionCheckTask()
 
-      if (it.name == "javadocJar" && !skipDokka) {
-        it.archiveClassifier.set("javadoc")
-        it.from(target.tasks.named(DOKKATOO_HTML_TASK_NAME))
-      }
-    }
     target.tasks.withType(GenerateModuleMetadata::class.java).configureEach {
       it.mustRunAfter("javadocJar")
     }
@@ -71,6 +71,78 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
     }
     target.tasks.withType(Sign::class.java).configureEach {
       it.mustRunAfter(target.tasks.withType(Jar::class.java))
+    }
+  }
+
+  private fun Project.registerCoordinatesStringsCheckTask(
+    groupId: String,
+    mavenPublications: NamedDomainObjectSet<MavenPublication>
+  ) {
+
+    val checkTask = tasks.registerOnce(
+      "checkMavenCoordinatesStrings",
+      DefaultCheckTask::class.java
+    ) { task ->
+      task.group = "publishing"
+      task.description = "checks that the project's maven group and artifact ID are valid for Maven"
+
+      val artifactIds = mavenPublications.map { it.artifactId }
+
+      task.doLast {
+
+        val allowedRegex = "^[A-Za-z0-9_\\-.]+$".toRegex()
+
+        check(groupId.matches(allowedRegex)) {
+
+          val actualString = when {
+            groupId.isEmpty() -> "<<empty string>>"
+            else -> groupId
+          }
+          "groupId ($actualString) is not a valid Maven identifier ($allowedRegex)."
+        }
+
+        val invalid = artifactIds.filterNot { it.matches(allowedRegex) }
+
+        check(invalid.isEmpty()) {
+          invalid.joinToString("\n") { artifactId ->
+
+            val actualString = when {
+              artifactId.isEmpty() -> "<<empty string>>"
+              else -> artifactId
+            }
+            "artifactId ($actualString) is not a valid Maven identifier ($allowedRegex)."
+          }
+        }
+      }
+    }
+
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { task ->
+      task.dependsOn(checkTask)
+    }
+  }
+
+  private fun Project.registerSnapshotVersionCheckTask() {
+    tasks.registerOnce("checkVersionIsSnapshot", DefaultCheckTask::class.java) { task ->
+      task.group = "publishing"
+      task.description = "ensures that the project version has a -SNAPSHOT suffix"
+      val versionString = version as String
+      task.doLast {
+        val expected = "-SNAPSHOT"
+        require(versionString.endsWith(expected)) {
+          "The project's version name must be suffixed with `$expected` when checked in" +
+            " to the main branch, but instead it's `$versionString`."
+        }
+      }
+    }
+    tasks.registerOnce("checkVersionIsNotSnapshot", DefaultCheckTask::class.java) { task ->
+      task.group = "publishing"
+      task.description = "ensures that the project version does not have a -SNAPSHOT suffix"
+      val versionString = version as String
+      task.doLast {
+        require(!versionString.endsWith("-SNAPSHOT")) {
+          "The project's version name cannot have a -SNAPSHOT suffix, but it was $versionString."
+        }
+      }
     }
   }
 }

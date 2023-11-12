@@ -35,13 +35,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.Serializable
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile as KotlinCompileDsl
 
-@Suppress("UndocumentedPublicClass")
 public interface KotlinJvmExtension : KotlinExtension
 
-@Suppress("UndocumentedPublicClass")
 public interface KotlinMultiplatformExtension : KotlinExtension
 
-@Suppress("UndocumentedPublicClass")
 public interface KotlinExtension : Serializable {
 
   @Suppress("UndocumentedPublicProperty")
@@ -51,7 +48,6 @@ public interface KotlinExtension : Serializable {
   public val explicitApi: Property<Boolean>
 }
 
-@Suppress("UndocumentedPublicClass")
 public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {

@@ -20,15 +20,11 @@ import com.rickbusarow.kgx.libsCatalog
 import com.rickbusarow.ktlint.KtLintPlugin
 import com.rickbusarow.ktlint.KtLintTask
 import com.rickbusarow.lattice.core.PluginIds
-import com.rickbusarow.lattice.core.VERSION_NAME
 import kotlinx.validation.KotlinApiBuildTask
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import java.nio.file.Files
-import kotlin.text.RegexOption.MULTILINE
 
-@Suppress("UndocumentedPublicClass")
 public abstract class KtLintConventionPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
@@ -48,30 +44,12 @@ public abstract class KtLintConventionPlugin : Plugin<Project> {
           task.mustRunAfter(subproject.tasks.named("dependencyGuardBaseline"))
         }
 
+      System.setProperty("ktrules.project_version", target.version.toString())
+
       task.mustRunAfter(
         target.tasks.withType(KotlinApiBuildTask::class.java),
         target.tasks.withType(KotlinApiCompareTask::class.java)
       )
-    }
-
-    val editorconfig = target.file(".editorconfig")
-
-    if (!Files.isSymbolicLink(editorconfig.toPath())) {
-
-      target.tasks.register("updateEditorConfigVersion") { task ->
-        val versionName = target.VERSION_NAME
-        task.doLast {
-          val oldText = editorconfig.readText()
-
-          val reg = """^(kt-rules_project_version *?= *?)\S*$""".toRegex(MULTILINE)
-
-          val newText = oldText.replace(reg, "$1$versionName")
-
-          if (newText != oldText) {
-            editorconfig.writeText(newText)
-          }
-        }
-      }
     }
   }
 }

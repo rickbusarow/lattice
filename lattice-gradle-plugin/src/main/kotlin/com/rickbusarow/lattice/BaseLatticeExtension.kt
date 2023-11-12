@@ -15,73 +15,100 @@
 
 package com.rickbusarow.lattice
 
+import com.rickbusarow.kgx.newInstance
 import com.rickbusarow.lattice.composite.DefaultHasCompositeSubExtension
 import com.rickbusarow.lattice.composite.HasCompositeSubExtension
 import com.rickbusarow.lattice.conventions.AutoServiceExtension
 import com.rickbusarow.lattice.conventions.BuildLogicShadowExtensionHook
+import com.rickbusarow.lattice.conventions.DefaultHasGitHubSubExtension
+import com.rickbusarow.lattice.conventions.DefaultHasJavaSubExtension
+import com.rickbusarow.lattice.conventions.DefaultHasKotlinJvmSubExtension
+import com.rickbusarow.lattice.conventions.DefaultHasKotlinSubExtension
+import com.rickbusarow.lattice.conventions.HasGitHubSubExtension
+import com.rickbusarow.lattice.conventions.HasJavaSubExtension
+import com.rickbusarow.lattice.conventions.HasKotlinJvmSubExtension
+import com.rickbusarow.lattice.conventions.HasKotlinSubExtension
 import com.rickbusarow.lattice.conventions.KotlinExtension
 import com.rickbusarow.lattice.conventions.KotlinJvmExtension
 import com.rickbusarow.lattice.conventions.KotlinMultiplatformExtension
 import com.rickbusarow.lattice.conventions.KspExtension
 import com.rickbusarow.lattice.conventions.PokoExtension
 import com.rickbusarow.lattice.conventions.SerializationExtension
+import com.rickbusarow.lattice.dokka.DefaultHasDokkaSubExtension
+import com.rickbusarow.lattice.dokka.HasDokkaSubExtension
 import com.rickbusarow.lattice.publishing.DefaultHasPublishingMavenSubExtension
 import com.rickbusarow.lattice.publishing.DefaultPublishingGradlePluginHandler
 import com.rickbusarow.lattice.publishing.HasPublishingMavenSubExtension
-import com.rickbusarow.lattice.publishing.PublishingExtension
 import com.rickbusarow.lattice.publishing.PublishingGradlePluginHandler
+import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.plugins.ExtensionAware
 import javax.inject.Inject
 
-@Suppress("UndocumentedPublicClass")
-public abstract class RootExtension @Inject constructor(
+public interface LatticeExtensionInternal : ExtensionAware {
+  public val objects: ObjectFactory
+  public val target: Project
+}
+
+public abstract class BaseLatticeExtension @Inject constructor(
+  private val target: Project,
   private val objects: ObjectFactory
-) : HasCompositeSubExtension by objects.newInstance<DefaultHasCompositeSubExtension>(),
+) : ExtensionAware,
+  CoreLatticeSettings by objects.newInstance<DefaultCoreLatticeSettings>()
+
+public open class RootExtension @Inject constructor(
+  target: Project,
+  objects: ObjectFactory
+) : BaseLatticeExtension(target, objects),
+  HasCompositeSubExtension by objects.newInstance<DefaultHasCompositeSubExtension>(),
+  HasDokkaSubExtension by objects.newInstance<DefaultHasDokkaSubExtension>(),
+  HasGitHubSubExtension by objects.newInstance<DefaultHasGitHubSubExtension>(),
+  HasJavaSubExtension by objects.newInstance<DefaultHasJavaSubExtension>(),
+  HasKotlinSubExtension by objects.newInstance<DefaultHasKotlinSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KspExtension,
   PokoExtension,
-  PublishingExtension,
   SerializationExtension
 
-@Suppress("UndocumentedPublicClass")
 public abstract class GradlePluginModuleExtension @Inject constructor(
-  private val objects: ObjectFactory
-) :
-  PublishingGradlePluginHandler by objects.newInstance<DefaultPublishingGradlePluginHandler>(),
+  target: Project,
+  objects: ObjectFactory
+) : BaseLatticeExtension(target, objects),
+  HasDokkaSubExtension by objects.newInstance<DefaultHasDokkaSubExtension>(),
+  HasGitHubSubExtension by objects.newInstance<DefaultHasGitHubSubExtension>(),
+  HasJavaSubExtension by objects.newInstance<DefaultHasJavaSubExtension>(),
+  HasKotlinJvmSubExtension by objects.newInstance<DefaultHasKotlinJvmSubExtension>(),
   HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
+  PublishingGradlePluginHandler by objects.newInstance<DefaultPublishingGradlePluginHandler>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,
   KspExtension,
   PokoExtension,
-  PublishingExtension,
   SerializationExtension
 
-@Suppress("UndocumentedPublicClass")
 public abstract class KotlinJvmModuleExtension @Inject constructor(
-  private val objects: ObjectFactory
-) : HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
+  target: Project,
+  objects: ObjectFactory
+) : BaseLatticeExtension(target, objects),
+  HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
+  HasDokkaSubExtension by objects.newInstance<DefaultHasDokkaSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinJvmExtension,
   KspExtension,
   PokoExtension,
-  PublishingExtension,
   SerializationExtension
 
-@Suppress("UndocumentedPublicClass")
 public abstract class KotlinMultiplatformModuleExtension @Inject constructor(
-  private val objects: ObjectFactory
-) :
+  target: Project,
+  objects: ObjectFactory
+) : BaseLatticeExtension(target, objects),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KotlinExtension,
   KotlinMultiplatformExtension,
   KspExtension,
   PokoExtension,
-  PublishingExtension,
   SerializationExtension
-
-@Suppress("UnusedPrivateMember") // no, it's used as a delegate
-private inline fun <reified T : Any> ObjectFactory.newInstance(): T = newInstance(T::class.java)

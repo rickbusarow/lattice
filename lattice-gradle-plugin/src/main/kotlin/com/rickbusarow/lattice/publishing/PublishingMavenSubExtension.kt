@@ -15,19 +15,24 @@
 
 package com.rickbusarow.lattice.publishing
 
-import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin.Companion.DOKKATOO_HTML_TASK_NAME
+import com.rickbusarow.kgx.gradleLazy
+import com.rickbusarow.kgx.javaExtension
+import com.rickbusarow.kgx.names.SourceSetName.Companion.addSuffix
+import com.rickbusarow.kgx.names.SourceSetName.Companion.asSourceSetName
+import com.rickbusarow.kgx.names.SourceSetName.Companion.isMain
+import com.rickbusarow.kgx.newInstance
+import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
+import com.rickbusarow.lattice.conventions.AbstractSubExtension
 import com.rickbusarow.lattice.core.SubExtension
-import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavadocJar.Dokka
-import com.vanniktech.maven.publish.KotlinJvm
+import com.rickbusarow.lattice.core.SubExtensionInternal
+import com.rickbusarow.lattice.dokka.DokkatooConventionPlugin.Companion.dokkaJavadocJar
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.plugins.signing.Sign
-import org.jetbrains.kotlin.gradle.utils.property
 import javax.inject.Inject
 
 public interface HasPublishingMavenSubExtension : java.io.Serializable {
@@ -41,136 +46,135 @@ public interface HasPublishingMavenSubExtension : java.io.Serializable {
 }
 
 public abstract class DefaultHasPublishingMavenSubExtension @Inject constructor(
-  private val target: Project,
-  private val objects: ObjectFactory
-) : HasPublishingMavenSubExtension {
+  override val objects: ObjectFactory
+) : AbstractHasSubExtension(),
+  HasPublishingMavenSubExtension,
+  SubExtensionInternal {
 
-  override val publishing: PublishingMavenSubExtension by property {
-    objects.newInstance(DefaultPublishingMavenSubExtension::class.java)
-  }
+  override val publishing: PublishingMavenSubExtension by
+    subExtension(DefaultPublishingMavenSubExtension::class)
 }
 
 public interface PublishingMavenSubExtension : SubExtension<PublishingMavenSubExtension> {
+
   public val defaultPom: DefaultMavenPom
-  public fun defaultPom(action: Action<in MavenPom>)
+
   public fun publishMaven(
-    groupId: String? = null,
     artifactId: String? = null,
     pomDescription: String? = null,
-    versionName: String? = null
+    groupId: String? = null,
+    versionName: String? = null,
+    sourceSetName: String = "main",
+    publicationName: String? = null,
+    configureAction: Action<in MavenPublication>? = null
   )
 }
 
-public open class DefaultPublishingMavenSubExtension @Inject constructor(
-  private val target: Project,
-  private val objects: ObjectFactory
-) : PublishingMavenSubExtension {
+public abstract class DefaultPublishingMavenSubExtension @Inject constructor(
+  target: Project,
+  objects: ObjectFactory
+) : AbstractSubExtension(target, objects), PublishingMavenSubExtension, SubExtensionInternal {
 
-  private val settings by property {
-    objects.newInstance(Settings::class.java)
-  }
-
-  override fun defaultPom(action: Action<in MavenPom>) {
-    action.execute(defaultPom)
-  }
-
-  override val defaultPom: DefaultMavenPom by property {
-    objects.newInstance(DefaultMavenPom::class.java)
+  // override val defaultPom: DefaultMavenPom = subExtension<DefaultMavenPom>("defaultPom")
+  override val defaultPom: DefaultMavenPom by gradleLazy {
+    objects.newInstance<DefaultMavenPom>()
       .also { pom ->
-        pom.url.convention(settings.publishing.POM_URL)
-        pom.name.convention(settings.publishing.POM_NAME)
+        pom.url.convention(latticeSettings.publishing.pom.url)
+        pom.name.convention(latticeSettings.publishing.pom.name)
 
-        pom.description.convention(settings.publishing.POM_DESCRIPTION)
-        pom.inceptionYear.convention(settings.publishing.POM_INCEPTION_YEAR)
+        pom.description.convention(latticeSettings.publishing.pom.description)
+        pom.inceptionYear.convention(latticeSettings.publishing.pom.inceptionYear)
 
         pom.licenses { licenseSpec ->
           licenseSpec.license { license ->
-            license.name.convention(settings.publishing.POM_LICENSE_NAME)
-            license.url.convention(settings.publishing.POM_LICENSE_URL)
-            license.distribution.convention(settings.publishing.POM_LICENSE_DIST)
+
+            license.name.convention(latticeSettings.publishing.pom.license.name)
+            license.url.convention(latticeSettings.publishing.pom.license.url)
+            license.distribution.convention(latticeSettings.publishing.pom.license.dist)
           }
         }
 
         pom.scm { scm ->
-          scm.url.convention(settings.publishing.POM_SCM_URL)
-          scm.connection.convention(settings.publishing.POM_SCM_CONNECTION)
-          scm.developerConnection.convention(settings.publishing.POM_SCM_DEV_CONNECTION)
+
+          scm.url.convention(latticeSettings.publishing.pom.scm.url)
+          scm.connection.convention(latticeSettings.publishing.pom.scm.connection)
+          scm.developerConnection.convention(latticeSettings.publishing.pom.scm.devConnection)
         }
 
         pom.developers { developerSpec ->
           developerSpec.developer { developer ->
-            developer.id.convention(settings.publishing.POM_DEVELOPER_ID)
-            developer.name.convention(settings.publishing.POM_DEVELOPER_NAME)
-            developer.url.convention(settings.publishing.POM_DEVELOPER_URL)
+
+            developer.id.convention(latticeSettings.publishing.pom.developer.id)
+            developer.name.convention(latticeSettings.publishing.pom.developer.name)
+            developer.url.convention(latticeSettings.publishing.pom.developer.url)
           }
         }
       }
   }
 
   override fun publishMaven(
-    groupId: String?,
     artifactId: String?,
     pomDescription: String?,
-    versionName: String?
+    groupId: String?,
+    versionName: String?,
+    sourceSetName: String,
+    publicationName: String?,
+    configureAction: Action<in MavenPublication>?
   ) {
 
-    target.publishMaven(
-      groupId = groupId ?: target.group.toString(),
-      artifactId = artifactId ?: settings.publishing.POM_ARTIFACT_ID.orNull ?: target.name,
-      pomDescription = pomDescription ?: settings.publishing.POM_DESCRIPTION.orNull
-        ?: target.description,
-      versionName = versionName ?: settings.VERSION_NAME.orNull ?: target.version.toString()
-    )
-  }
+    val ssName = sourceSetName.asSourceSetName()
 
-  @Suppress("UnstableApiUsage")
-  private fun Project.publishMaven(
-    publicationName: String = "maven",
-    groupId: String,
-    artifactId: String,
-    pomDescription: String?,
-    versionName: String
-  ) {
+    val pubName = publicationName ?: PublicationName
+      .forSourceSetName(baseName = "maven", sourceSetName = ssName).value
 
-    val javadocJar = Dokka(taskName = DOKKATOO_HTML_TASK_NAME)
-
-    when {
-      // The plugin-publish plugin handles its artifacts
-      pluginManager.hasPlugin("com.gradle.plugin-publish") -> {}
-
-      // handle publishing plugins if they're not going to the plugin portal
-      pluginManager.hasPlugin("java-gradle-plugin") -> {
-        target.mavenPublishBaseExtension.configure(
-          GradlePlugin(
-            javadocJar = javadocJar,
-            sourcesJar = true
-          )
-        )
-      }
-
-      else -> {
-        target.mavenPublishBaseExtension.configure(
-          KotlinJvm(
-            javadocJar = javadocJar,
-            sourcesJar = true
-          )
-        )
-      }
-    }
-
-    val publications = gradlePublishingExtension.publications
-
-    val mavenPublication = if (publications.names.contains(publicationName)) {
-      publications.named(publicationName, MavenPublication::class.java)
+    val jt = if (ssName.isMain()) {
+      "jar"
     } else {
-      publications.register(publicationName, MavenPublication::class.java)
+      ssName.addSuffix("Jar")
     }
+    val sjt = if (ssName.isMain()) {
+      "sourcesJar"
+    } else {
+      ssName.addSuffix("SourcesJar")
+    }
+
+    target.javaExtension.also {
+      it.withJavadocJar()
+      it.withSourcesJar()
+    }
+
+    target.gradlePublishingExtension
+      .publications
+      .register(pubName, MavenPublication::class.java) { publication ->
+        publication.artifactId = artifactId
+          ?: latticeSettings.publishing.pom.artifactId.orNull
+          ?: target.name
+        publication.groupId = groupId
+          ?: latticeSettings.GROUP.orNull
+          ?: target.group.toString()
+        publication.version = versionName
+          ?: latticeSettings.VERSION_NAME.orNull
+          ?: target.version.toString()
+
+        val jarTask = target.tasks.named(jt, Jar::class.java)
+        val sourcesJar = target.tasks.named(sjt, Jar::class.java)
+
+        publication.artifact(jarTask)
+        publication.artifact(sourcesJar)
+        publication.artifact(target.tasks.dokkaJavadocJar)
+      }
+
+    val publications = target.gradlePublishingExtension.publications
+
+    val mavenPublication =
+      if (publications.names.contains(pubName)) {
+        publications.named(pubName, MavenPublication::class.java)
+      } else {
+        publications.register(pubName, MavenPublication::class.java)
+      }
 
     mavenPublication.configure { publication ->
-      publication.artifactId = artifactId
       publication.pom.description.set(pomDescription)
-      publication.groupId = groupId
-      publication.version = versionName
 
       val default = defaultPom
 
@@ -213,11 +217,11 @@ public open class DefaultPublishingMavenSubExtension @Inject constructor(
     // registerSnapshotVersionCheckTask()
     // configureSkipDokka()
 
-    tasks.withType(Sign::class.java).configureEach {
+    target.tasks.withType(Sign::class.java).configureEach {
       // it.notCompatibleWithConfigurationCache("")
 
       // skip signing for -SNAPSHOT publishing
-      it.onlyIf { !(version as String).endsWith("SNAPSHOT") }
+      it.onlyIf { !(target.version as String).endsWith("SNAPSHOT") }
     }
   }
 }

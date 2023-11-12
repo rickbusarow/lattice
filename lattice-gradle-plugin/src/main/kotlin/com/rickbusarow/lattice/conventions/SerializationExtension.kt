@@ -19,7 +19,6 @@ import com.rickbusarow.kgx.dependency
 import com.rickbusarow.kgx.libsCatalog
 import org.gradle.api.Project
 
-@Suppress("UndocumentedPublicClass")
 public interface SerializationExtension {
 
   @Suppress("UndocumentedPublicFunction")

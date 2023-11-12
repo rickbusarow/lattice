@@ -85,3 +85,6 @@ gradleEnterprise {
 include(":lattice-gradle-plugin")
 
 includeBuild("build-logic")
+
+// TODO delete me
+includeBuild("../kgx")

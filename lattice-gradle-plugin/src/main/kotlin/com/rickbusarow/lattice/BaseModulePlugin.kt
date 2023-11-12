@@ -19,11 +19,11 @@ import com.rickbusarow.lattice.conventions.CheckPlugin
 import com.rickbusarow.lattice.conventions.CleanPlugin
 import com.rickbusarow.lattice.conventions.DependencyGuardConventionPlugin
 import com.rickbusarow.lattice.conventions.DetektConventionPlugin
-import com.rickbusarow.lattice.conventions.DokkatooConventionPlugin
 import com.rickbusarow.lattice.conventions.KotlinJvmConventionPlugin
 import com.rickbusarow.lattice.conventions.KotlinMultiplatformConventionPlugin
 import com.rickbusarow.lattice.conventions.KtLintConventionPlugin
 import com.rickbusarow.lattice.conventions.TestConventionPlugin
+import com.rickbusarow.lattice.dokka.DokkatooConventionPlugin
 import com.rickbusarow.lattice.publishing.LatticePublishPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project

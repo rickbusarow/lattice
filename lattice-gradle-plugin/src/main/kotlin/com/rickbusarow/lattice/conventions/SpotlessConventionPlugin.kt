@@ -31,7 +31,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.tasks.util.PatternFilterable
 
-@Suppress("UndocumentedPublicClass")
 public abstract class SpotlessConventionPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
