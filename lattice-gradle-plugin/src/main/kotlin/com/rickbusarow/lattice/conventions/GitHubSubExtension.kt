@@ -22,7 +22,9 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
+import org.gradle.api.reflect.HasPublicType
+import org.gradle.api.reflect.TypeOf
+import org.gradle.api.reflect.TypeOf.typeOf
 import javax.inject.Inject
 
 public interface HasGitHubSubExtension : java.io.Serializable {
@@ -37,11 +39,7 @@ public abstract class DefaultHasGitHubSubExtension @Inject constructor(
   final override val objects: ObjectFactory
 ) : AbstractHasSubExtension(), HasGitHubSubExtension {
 
-  // override val github: GitHubSubExtension by subExtension(DefaultGitHubSubExtension::class)
-  override val github: GitHubSubExtension = objects.newInstance(
-    DefaultGitHubSubExtension::class.java
-  )
-    .also { extraProperties.set("github", it) }
+  override val github: GitHubSubExtension by subExtension(DefaultGitHubSubExtension::class)
 }
 
 public interface GitHubSubExtension : SubExtension<GitHubSubExtension> {
@@ -56,7 +54,9 @@ public interface GitHubSubExtension : SubExtension<GitHubSubExtension> {
 public abstract class DefaultGitHubSubExtension @Inject constructor(
   target: Project,
   objects: ObjectFactory
-) : AbstractSubExtension(target, objects), GitHubSubExtension, SubExtensionInternal {
+) : AbstractSubExtension(target, objects), GitHubSubExtension, SubExtensionInternal, HasPublicType {
+
+  override fun getPublicType(): TypeOf<*> = typeOf(GitHubSubExtension::class.java)
 
   final override val owner: Property<String> = objects.property(String::class.java)
     .convention(latticeSettings.repository.github.owner)

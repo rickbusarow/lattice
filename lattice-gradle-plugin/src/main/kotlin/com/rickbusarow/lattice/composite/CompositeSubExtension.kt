@@ -27,9 +27,7 @@ import org.jetbrains.kotlin.gradle.utils.property
 import javax.inject.Inject
 
 public interface HasCompositeSubExtension : java.io.Serializable {
-  /** */
   public val composite: CompositeSubExtension
-
   public fun composite(action: Action<in CompositeSubExtension>) {
     action.execute(composite)
   }

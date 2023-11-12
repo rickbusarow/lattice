@@ -77,6 +77,9 @@ dependencies {
   }
   implementation(libs.vanniktech.publish)
   implementation(libs.vanniktech.publish.nexus)
+
+  testImplementation(libs.junit.jupiter.api)
+  testImplementation(libs.junit.engine)
 }
 
 val GITHUB_OWNER: String by project

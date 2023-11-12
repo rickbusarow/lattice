@@ -40,6 +40,8 @@ moduleCheck {
 lattice {
   composite {
   }
+  github {
+  }
 }
 
 val ktlintPluginId = libs.plugins.ktlint.get().pluginId
