@@ -17,6 +17,7 @@ package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -25,6 +26,9 @@ import javax.inject.Inject
 
 public interface HasJavaSubExtension : java.io.Serializable {
   public val java: JavaSubExtension
+  public fun java(action: Action<in JavaSubExtension>) {
+    action.execute(java)
+  }
 }
 
 public abstract class DefaultHasJavaSubExtension @Inject constructor(

@@ -19,11 +19,13 @@ import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.inCI
 import com.rickbusarow.kgx.internal.InternalGradleApiAccess
 import com.rickbusarow.kgx.isRealRootProject
+import com.rickbusarow.kgx.newInstance
 import com.rickbusarow.lattice.composite.CompositePlugin
 import com.rickbusarow.lattice.conventions.BenManesVersionsPlugin
 import com.rickbusarow.lattice.conventions.DokkaVersionArchivePlugin
 import com.rickbusarow.lattice.conventions.GitHubReleasePlugin
 import com.rickbusarow.lattice.conventions.SpotlessConventionPlugin
+import com.rickbusarow.lattice.conventions.SubExtensionRegistry
 import com.rickbusarow.lattice.curator.CuratorPlugin
 import modulecheck.gradle.ModuleCheckExtension
 import modulecheck.gradle.ModuleCheckPlugin
@@ -40,7 +42,9 @@ public abstract class RootPlugin @Inject constructor(
 
     target.checkProjectIsRoot()
 
-    target.extensions.create("lattice", RootExtension::class.java)
+    val registry = target.objects.newInstance<SubExtensionRegistry>()
+
+    target.extensions.create("lattice", RootExtension::class.java, registry)
 
     super.apply(target)
 

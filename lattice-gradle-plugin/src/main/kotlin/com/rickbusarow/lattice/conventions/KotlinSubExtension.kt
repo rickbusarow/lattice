@@ -19,6 +19,7 @@ import com.rickbusarow.kgx.gradleLazy
 import com.rickbusarow.kgx.property
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -26,6 +27,9 @@ import javax.inject.Inject
 
 public interface HasKotlinSubExtension : java.io.Serializable {
   public val kotlin: KotlinSubExtension
+  public fun kotlin(action: Action<in KotlinSubExtension>) {
+    action.execute(kotlin)
+  }
 }
 
 public interface HasKotlinJvmSubExtension : HasKotlinSubExtension {

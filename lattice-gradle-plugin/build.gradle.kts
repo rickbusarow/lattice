@@ -37,7 +37,6 @@ buildConfig {
   packageName.set("com.rickbusarow.lattice")
   useKotlinOutput {
     internalVisibility = true
-    // topLevelConstants = true
   }
 
   buildConfigField("String", "pokoVersion", "\"${libs.versions.poko.get()}\"")
@@ -52,6 +51,13 @@ dependencies {
   api(libs.rickBusarow.doks)
   api(libs.rickBusarow.kgx)
   api(libs.rickBusarow.ktlint)
+
+  val isSync = providers.systemProperty("idea.sync.active")
+    .getOrElse("false")
+    .toBoolean()
+  if (isSync) {
+    api(gradleApi())
+  }
 
   compileOnly(gradleApi())
 

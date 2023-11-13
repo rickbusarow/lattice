@@ -22,11 +22,41 @@ import com.rickbusarow.lattice.core.LatticeSettings
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
 import com.rickbusarow.lattice.core.latticeSettings
+import dev.drewhamilton.poko.Poko
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.ExtensionAware
 import javax.inject.Inject
 import kotlin.reflect.KClass
+
+@Poko
+public open class SubExtensionRegistry @Inject constructor(
+  private val objects: ObjectFactory
+) {
+  public val schema: MutableMap<String, SubExtensionElement<*>> =
+    mutableMapOf<String, SubExtensionElement<*>>()
+
+  internal inline fun <reified T : Any, reified R : T> bind(rClass: KClass<out R>): T {
+    return objects.newInstance(rClass.java, this) as T
+  }
+
+  public fun <T : SubExtension<*>> register(
+    name: String,
+    type: Class<T>,
+    instanceType: Class<out T>
+  ): T {
+    val instance = objects.newInstance(instanceType)
+    schema[name] = SubExtensionElement(name, type, instance)
+    return instance
+  }
+
+  @Poko
+  public class SubExtensionElement<out T : SubExtension<*>>(
+    public val name: String,
+    public val type: Class<out T>,
+    public val instance: T
+  )
+}
 
 public abstract class AbstractHasSubExtension : HasObjectFactory {
 
