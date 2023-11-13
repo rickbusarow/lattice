@@ -15,7 +15,6 @@
 
 package com.rickbusarow.lattice.conventions
 
-import com.rickbusarow.kgx.gradleLazy
 import com.rickbusarow.kgx.property
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
@@ -40,29 +39,27 @@ public interface HasKotlinMultiplatformSubExtension : HasKotlinSubExtension {
   public override val kotlin: KotlinMultiplatformSubExtension
 }
 
-public abstract class DefaultHasKotlinSubExtension @Inject constructor(
+internal abstract class DefaultHasKotlinSubExtension @Inject constructor(
   final override val objects: ObjectFactory
 ) : AbstractHasSubExtension(), HasKotlinSubExtension {
 
   override val kotlin: KotlinSubExtension by subExtension(DefaultKotlinSubExtension::class)
 }
 
-public abstract class DefaultHasKotlinJvmSubExtension @Inject constructor(
+internal abstract class DefaultHasKotlinJvmSubExtension @Inject constructor(
   objects: ObjectFactory
 ) : DefaultHasKotlinSubExtension(objects), HasKotlinJvmSubExtension {
 
-  override val kotlin: KotlinJvmSubExtension by gradleLazy {
-    objects.newInstance(DefaultKotlinJvmSubExtension::class.java)
-  }
+  override val kotlin: KotlinJvmSubExtension by subExtension(DefaultKotlinJvmSubExtension::class)
 }
 
-public abstract class DefaultHasKotlinMultiplatformSubExtension @Inject constructor(
+internal abstract class DefaultHasKotlinMultiplatformSubExtension @Inject constructor(
   objects: ObjectFactory
-) : DefaultHasKotlinSubExtension(objects), HasKotlinMultiplatformSubExtension {
+) : DefaultHasKotlinSubExtension(objects),
+  HasKotlinMultiplatformSubExtension {
 
-  override val kotlin: KotlinMultiplatformSubExtension by gradleLazy {
-    objects.newInstance(DefaultKotlinMultiplatformSubExtension::class.java)
-  }
+  override val kotlin: KotlinMultiplatformSubExtension
+    by subExtension(DefaultKotlinMultiplatformSubExtension::class)
 }
 
 public interface KotlinSubExtension : SubExtension<KotlinSubExtension> {

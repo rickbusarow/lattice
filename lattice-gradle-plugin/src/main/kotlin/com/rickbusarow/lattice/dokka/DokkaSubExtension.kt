@@ -18,40 +18,29 @@ package com.rickbusarow.lattice.dokka
 import com.rickbusarow.kgx.property
 import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
 import com.rickbusarow.lattice.conventions.AbstractSubExtension
-import com.rickbusarow.lattice.conventions.SubExtensionRegistry
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
 import com.rickbusarow.lattice.core.latticeSettings
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import javax.inject.Inject
 
-public interface HasDokkaSubExtension :
-  ExtensionAware,
-  java.io.Serializable {
+public interface HasDokkaSubExtension : java.io.Serializable {
 
-  /**
-   * This is a kdoc comment written in the interface
-   */
   public val dokka: DokkaSubExtension
-  // public fun dokka(action: Action<in DokkaSubExtension>) {
-  //   action.execute(dokka)
-  // }
+
+  public fun dokka(action: Action<in DokkaSubExtension>) {
+    action.execute(dokka)
+  }
 }
 
-public abstract class DefaultHasDokkaSubExtension @Inject constructor(
-  subExtensionRegistry: SubExtensionRegistry,
+internal abstract class DefaultHasDokkaSubExtension @Inject constructor(
   override val objects: ObjectFactory
 ) : AbstractHasSubExtension(), HasDokkaSubExtension {
 
-  override val dokka: DokkaSubExtension = subExtensionRegistry.register(
-    name = "dokka",
-    type = DokkaSubExtension::class.java,
-    instanceType = DefaultDokkaSubExtension::class.java
-  )
-  // override val dokka: DokkaSubExtension by subExtension(DefaultDokkaSubExtension::class)
+  override val dokka: DokkaSubExtension by subExtension(DefaultDokkaSubExtension::class)
 }
 
 public interface DokkaSubExtension : SubExtension<DokkaSubExtension> {

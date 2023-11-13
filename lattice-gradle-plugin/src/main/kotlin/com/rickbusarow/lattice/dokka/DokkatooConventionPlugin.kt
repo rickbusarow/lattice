@@ -23,13 +23,12 @@ import com.rickbusarow.kgx.isRootProject
 import com.rickbusarow.kgx.libsCatalog
 import com.rickbusarow.kgx.projectDependency
 import com.rickbusarow.ktlint.KtLintTask
-import com.rickbusarow.lattice.BaseLatticeExtension
 import com.rickbusarow.lattice.conventions.HasGitHubSubExtension
 import com.rickbusarow.lattice.conventions.HasJavaSubExtension
 import com.rickbusarow.lattice.conventions.HasKotlinSubExtension
 import com.rickbusarow.lattice.core.DefaultLatticeJavadocJarTask
 import com.rickbusarow.lattice.core.SEMVER_REGEX
-import com.rickbusarow.lattice.core.VERSION_NAME
+import com.rickbusarow.lattice.latticeExtension
 import dev.adamko.dokkatoo.DokkatooExtension
 import dev.adamko.dokkatoo.dokka.plugins.DokkaVersioningPluginParameters
 import dev.adamko.dokkatoo.tasks.DokkatooGenerateTask
@@ -48,7 +47,7 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
 
     target.pluginManager.apply(dev.adamko.dokkatoo.DokkatooPlugin::class.java)
 
-    val latticeExtension = target.extensions.getByType(BaseLatticeExtension::class.java)
+    val latticeExtension = target.latticeExtension
 
     val dokkaSubExtension = (latticeExtension as HasDokkaSubExtension).dokka
     val gitHubSubExtension = (latticeExtension as HasGitHubSubExtension).github
@@ -158,7 +157,7 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
         dokkatoo.pluginsConfiguration
           .withType(DokkaVersioningPluginParameters::class.java).configureEach { versioning ->
 
-            versioning.version.set(target.VERSION_NAME)
+            versioning.version.set(latticeExtension.versionName)
             if (dokkaArchiveBuildDir.get().asFile.exists()) {
               versioning.olderVersionsDir.set(dokkaArchiveBuildDir)
             }

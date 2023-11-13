@@ -1,15 +1,6 @@
 [
   {
     "gradlePath": ":lattice-gradle-plugin",
-    "group": "com.rickbusarow.lattice.composite",
-    "artifactId": "com.rickbusarow.lattice.composite.gradle.plugin",
-    "description": "Convention plugin for making composite Gradle builds easier",
-    "packaging": "pom",
-    "javaVersion": "11",
-    "publicationName": "compositePluginMarkerMaven"
-  },
-  {
-    "gradlePath": ":lattice-gradle-plugin",
     "group": "com.rickbusarow.lattice.java-gradle-plugin",
     "artifactId": "com.rickbusarow.lattice.java-gradle-plugin.gradle.plugin",
     "description": "Convention plugin for a java-gradle-plugin project",

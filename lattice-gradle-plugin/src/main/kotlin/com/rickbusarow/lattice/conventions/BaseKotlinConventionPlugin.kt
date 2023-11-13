@@ -20,6 +20,7 @@ import com.rickbusarow.lattice.core.JVM_TARGET
 import com.rickbusarow.lattice.core.JVM_TARGET_INT
 import com.rickbusarow.lattice.core.JVM_TOOLCHAIN_INT
 import com.rickbusarow.lattice.core.KOTLIN_API
+import com.rickbusarow.lattice.latticeExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -52,7 +53,7 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
 
-    val extension = target.extensions.getByType(KotlinExtension::class.java)
+    val extension = (target.latticeExtension as HasKotlinSubExtension).kotlin
 
     val jetbrainsExtension = target.kotlinExtension
     jetbrainsExtension.jvmToolchain(target.JVM_TOOLCHAIN_INT)
@@ -86,7 +87,7 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
     }
   }
 
-  private fun configureKotlinOptions(target: Project, extension: KotlinExtension) {
+  private fun configureKotlinOptions(target: Project, extension: KotlinSubExtension) {
 
     target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
       task.kotlinOptions.jvmTarget = target.JVM_TARGET

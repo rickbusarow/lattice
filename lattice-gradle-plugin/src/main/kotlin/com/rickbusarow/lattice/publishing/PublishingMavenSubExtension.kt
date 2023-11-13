@@ -39,13 +39,12 @@ public interface HasPublishingMavenSubExtension : java.io.Serializable {
 
   public val publishing: PublishingMavenSubExtension
 
-  /** Eagerly configures this extension. */
   public fun publishing(action: Action<in PublishingMavenSubExtension>) {
     action.execute(publishing)
   }
 }
 
-public abstract class DefaultHasPublishingMavenSubExtension @Inject constructor(
+internal abstract class DefaultHasPublishingMavenSubExtension @Inject constructor(
   override val objects: ObjectFactory
 ) : AbstractHasSubExtension(),
   HasPublishingMavenSubExtension,

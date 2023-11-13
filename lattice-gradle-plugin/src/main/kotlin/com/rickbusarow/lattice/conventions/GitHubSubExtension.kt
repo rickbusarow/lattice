@@ -35,7 +35,7 @@ public interface HasGitHubSubExtension : java.io.Serializable {
   }
 }
 
-public abstract class DefaultHasGitHubSubExtension @Inject constructor(
+internal abstract class DefaultHasGitHubSubExtension @Inject constructor(
   final override val objects: ObjectFactory
 ) : AbstractHasSubExtension(), HasGitHubSubExtension {
 

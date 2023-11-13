@@ -15,6 +15,7 @@
 
 package com.rickbusarow.lattice.composite
 
+import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
 import com.rickbusarow.lattice.core.SubExtension
 import dev.drewhamilton.poko.Poko
 import org.gradle.api.Action
@@ -23,7 +24,6 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.reflect.TypeOf
 import org.gradle.api.specs.AndSpec
 import org.gradle.api.specs.Spec
-import org.jetbrains.kotlin.gradle.utils.property
 import javax.inject.Inject
 
 public interface HasCompositeSubExtension : java.io.Serializable {
@@ -33,14 +33,11 @@ public interface HasCompositeSubExtension : java.io.Serializable {
   }
 }
 
-public abstract class DefaultHasCompositeSubExtension @Inject constructor(
-  private val target: Project,
-  private val objects: ObjectFactory
-) : HasCompositeSubExtension {
+internal abstract class DefaultHasCompositeSubExtension @Inject constructor(
+  override val objects: ObjectFactory
+) : AbstractHasSubExtension(), HasCompositeSubExtension {
 
-  override val composite: CompositeSubExtension by property {
-    objects.newInstance(CompositeSubExtension::class.java)
-  }
+  override val composite: CompositeSubExtension by subExtension(CompositeSubExtension::class)
 }
 
 public abstract class CompositeSubExtension @Inject constructor(

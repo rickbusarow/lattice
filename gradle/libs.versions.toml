@@ -16,6 +16,7 @@ gradle-plugin-publish = "1.1.0"
 integration-test = "1.4.5"
 jUnit = "5.10.1"
 johnrengelman-shadow = "8.1.1"
+koin = "3.5.1"
 kotest = "5.8.0"
 kotlinx-binaryCompatibility = "0.13.2"
 kotlinx-coroutines = "1.7.3"
@@ -97,6 +98,8 @@ junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jUnit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jUnit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jUnit" }
+
+koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
 kotest-assertions-api = { module = "io.kotest:kotest-assertions-api", version.ref = "kotest" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }

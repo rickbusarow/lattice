@@ -31,12 +31,14 @@ import kotlin.reflect.KClass
 
 @Poko
 public open class SubExtensionRegistry @Inject constructor(
-  private val objects: ObjectFactory
+  @PublishedApi internal val objects: ObjectFactory
 ) {
   public val schema: MutableMap<String, SubExtensionElement<*>> =
     mutableMapOf<String, SubExtensionElement<*>>()
 
-  internal inline fun <reified T : Any, reified R : T> bind(rClass: KClass<out R>): T {
+  internal inline fun <reified T : Any, reified R : T> delegate(
+    rClass: KClass<out R> = R::class
+  ): T {
     return objects.newInstance(rClass.java, this) as T
   }
 
@@ -46,14 +48,24 @@ public open class SubExtensionRegistry @Inject constructor(
     instanceType: Class<out T>
   ): T {
     val instance = objects.newInstance(instanceType)
-    schema[name] = SubExtensionElement(name, type, instance)
+    schema[name] = SubExtensionElement(type, name, instance)
+    return instance
+  }
+
+  public inline fun <reified T : SubExtension<T>, reified R : T> register(
+    name: String,
+    instanceType: KClass<out R>
+  ): T {
+    val instance = objects.newInstance(instanceType.java)
+    val publicType = T::class.java
+    schema[name] = SubExtensionElement(publicType = publicType, name = name, instance = instance)
     return instance
   }
 
   @Poko
   public class SubExtensionElement<out T : SubExtension<*>>(
+    public val publicType: Class<out T>,
     public val name: String,
-    public val type: Class<out T>,
     public val instance: T
   )
 }
@@ -64,7 +76,7 @@ public abstract class AbstractHasSubExtension : HasObjectFactory {
     return objects.newInstanceLazy<T>()
   }
 
-  protected fun <T : SubExtension<T>> subExtension(clazz: KClass<out T>): Lazy<T> {
+  protected fun <T : SubExtension<T>, R : T> subExtension(clazz: KClass<out R>): Lazy<R> {
     return objects.newInstanceLazy(clazz.java)
   }
 
@@ -72,7 +84,7 @@ public abstract class AbstractHasSubExtension : HasObjectFactory {
     "Use subExtension(clazz: KClass<out T>) instead.",
     ReplaceWith("subExtension(T::class)")
   )
-  protected fun <T : SubExtension<T>> subExtension(clazz: Class<out T>): Lazy<T> {
+  protected fun <T : SubExtension<T>, R : T> subExtension(clazz: Class<out R>): Lazy<R> {
     return objects.newInstanceLazy(clazz)
   }
 }

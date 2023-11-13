@@ -31,7 +31,7 @@ public interface HasJavaSubExtension : java.io.Serializable {
   }
 }
 
-public abstract class DefaultHasJavaSubExtension @Inject constructor(
+internal abstract class DefaultHasJavaSubExtension @Inject constructor(
   final override val objects: ObjectFactory
 ) : AbstractHasSubExtension(), HasJavaSubExtension {
 

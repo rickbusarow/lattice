@@ -44,6 +44,11 @@ lattice {
   }
   dokka {
   }
+  java {
+  }
+
+  // dokka {
+  // }
 }
 
 val ktlintPluginId = libs.plugins.ktlint.get().pluginId

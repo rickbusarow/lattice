@@ -15,7 +15,6 @@
 
 package com.rickbusarow.lattice
 
-import com.rickbusarow.kgx.newInstance
 import com.rickbusarow.lattice.conventions.CheckPlugin
 import com.rickbusarow.lattice.conventions.CleanPlugin
 import com.rickbusarow.lattice.conventions.DependencyGuardConventionPlugin
@@ -23,7 +22,6 @@ import com.rickbusarow.lattice.conventions.DetektConventionPlugin
 import com.rickbusarow.lattice.conventions.KotlinJvmConventionPlugin
 import com.rickbusarow.lattice.conventions.KotlinMultiplatformConventionPlugin
 import com.rickbusarow.lattice.conventions.KtLintConventionPlugin
-import com.rickbusarow.lattice.conventions.SubExtensionRegistry
 import com.rickbusarow.lattice.conventions.TestConventionPlugin
 import com.rickbusarow.lattice.dokka.DokkatooConventionPlugin
 import com.rickbusarow.lattice.publishing.LatticePublishPlugin
@@ -49,9 +47,7 @@ public abstract class BaseModulePlugin : Plugin<Project> {
 public abstract class GradlePluginModulePlugin : BaseModulePlugin() {
   override fun apply(target: Project) {
 
-    val registry = target.objects.newInstance<SubExtensionRegistry>()
-
-    target.extensions.create("lattice", GradlePluginModuleExtension::class.java, registry)
+    target.extensions.create("lattice", GradlePluginModuleExtension::class.java)
 
     target.plugins.apply(KotlinJvmConventionPlugin::class.java)
 
@@ -63,8 +59,7 @@ public abstract class GradlePluginModulePlugin : BaseModulePlugin() {
 public abstract class KotlinJvmModulePlugin : BaseModulePlugin() {
   override fun apply(target: Project) {
 
-    val registry = target.objects.newInstance<SubExtensionRegistry>()
-    target.extensions.create("lattice", KotlinJvmModuleExtension::class.java, registry)
+    target.extensions.create("lattice", KotlinJvmModuleExtension::class.java)
 
     target.plugins.apply(KotlinJvmConventionPlugin::class.java)
 

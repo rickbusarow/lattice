@@ -35,7 +35,6 @@ public abstract class KtLintConventionPlugin : Plugin<Project> {
       .add("ktlint", target.libsCatalog.dependency("rickBusarow-ktrules"))
 
     target.tasks.withType(KtLintTask::class.java).configureEach { task ->
-      task.dependsOn(":updateEditorConfigVersion")
 
       target.allprojects
         .filter { it.plugins.hasPlugin(PluginIds.dropbox.dependency.guard) }

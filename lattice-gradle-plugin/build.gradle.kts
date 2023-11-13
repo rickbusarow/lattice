@@ -84,8 +84,8 @@ dependencies {
   implementation(libs.vanniktech.publish)
   implementation(libs.vanniktech.publish.nexus)
 
-  testImplementation(libs.junit.jupiter.api)
   testImplementation(libs.junit.engine)
+  testImplementation(libs.junit.jupiter.api)
 }
 
 val GITHUB_OWNER: String by project
@@ -106,12 +106,6 @@ gradlePlugin {
       id = "com.rickbusarow.lattice.root"
       implementationClass = "com.rickbusarow.lattice.RootPlugin"
       description = "Convention plugin for the root project of a multi-module build"
-      tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
-    }
-    register("composite") {
-      id = "com.rickbusarow.lattice.composite"
-      implementationClass = "com.rickbusarow.lattice.composite.CompositePlugin"
-      description = "Convention plugin for making composite Gradle builds easier"
       tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
     }
     register("java-gradle-plugin") {
