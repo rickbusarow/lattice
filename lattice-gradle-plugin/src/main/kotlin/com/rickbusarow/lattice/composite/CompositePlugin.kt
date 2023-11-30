@@ -32,6 +32,7 @@ import org.gradle.internal.DefaultTaskExecutionRequest
 @InternalGradleApiAccess
 public abstract class CompositePlugin : Plugin<Project> {
 
+  @OptIn(InternalGradleApiAccess::class)
   override fun apply(target: Project) {
 
     target.checkProjectIsRoot()
