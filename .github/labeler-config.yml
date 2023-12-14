@@ -1,23 +1,30 @@
 # see https://github.com/actions/labeler
 
 dependencies:
-  - "gradle/libs.versions.toml"
+  - changed-files:
+      - any-glob-to-any-file: "gradle/libs.versions.toml"
 
 documentation:
-  - "**/*.md"
-  - "**/*.mdx"
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"
+      - any-glob-to-any-file: "**/*.mdx"
 
 website:
-  - "website/**"
+  - changed-files:
+      - any-glob-to-any-file: "website/**"
 
 ci:
-  - ".github/**"
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
 
 classpath-change:
-  - "**/dependencies/*Classpath.txt"
+  - changed-files:
+      - any-glob-to-any-file: "**/dependencies/*Classpath.txt"
 
 artifacts-change:
-  - "artifacts.json"
+  - changed-files:
+      - any-glob-to-any-file: "artifacts.json"
 
 api-change:
-  - "**/*.api"
+  - changed-files:
+      - any-glob-to-any-file: "**/*.api"

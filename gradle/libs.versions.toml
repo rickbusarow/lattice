@@ -28,6 +28,7 @@ prettier = "2.8.4"
 prettier-plugin-sh = "0.12.8"
 rickBusarow-doks = "0.1.4"
 rickBusarow-github-release = "2.5.2"
+rickBusarow-kase = "0.3.0"
 rickBusarow-kgx = "0.1.9"
 rickBusarow-ktlint = "0.2.1"
 rickBusarow-ktrules = "1.2.1"
@@ -99,6 +100,10 @@ junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jUnit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jUnit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jUnit" }
+
+kase = { module = "com.rickbusarow.kase:kase", version.ref = "rickBusarow-kase" }
+kase-gradle = { module = "com.rickbusarow.kase:kase-gradle", version.ref = "rickBusarow-kase" }
+kase-gradle-dsl = { module = "com.rickbusarow.kase:kase-gradle-dsl", version.ref = "rickBusarow-kase" }
 
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
