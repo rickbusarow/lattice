@@ -15,6 +15,9 @@
 
 package com.rickbusarow.lattice.conventions
 
+import com.rickbusarow.kgx.library
+import com.rickbusarow.kgx.libsCatalog
+import com.rickbusarow.kgx.pluginId
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleVersionSelector
 
@@ -38,11 +41,13 @@ public interface PokoExtension {
     val implementation = configurations.getByName("implementation")
     val testCompileOnly = configurations.getByName("testCompileOnly")
 
-    val pokoAnnotationsModule = "dev.drewhamilton.poko:poko-annotations"
+    val pokoAnnotationsProvider = project.libsCatalog.library("poko-annotations")
+    val pokoAnnotations = pokoAnnotationsProvider.get()
+    val pokoAnnotationsModule = pokoAnnotations.module
 
     implementation.withDependencies { deps ->
       deps.removeIf {
-        pokoAnnotationsModule == (it as? ModuleVersionSelector)?.module?.toString()
+        pokoAnnotationsModule == (it as? ModuleVersionSelector)?.module
       }
     }
 
@@ -50,9 +55,9 @@ public interface PokoExtension {
 
     // Poko adds its annotation artifact as 'implementation', which is unnecessary.
     // Replace it with a 'compileOnly' dependency.
-    // compileOnly.dependencies.addLater(pokoAnnotationsProvider)
-    // testCompileOnly.dependencies.addLater(pokoAnnotationsProvider)
+    compileOnly.dependencies.addLater(pokoAnnotationsProvider)
+    testCompileOnly.dependencies.addLater(pokoAnnotationsProvider)
 
-    pluginManager.apply("dev.drewhamilton.poko")
+    pluginManager.apply(libsCatalog.pluginId("poko"))
   }
 }
