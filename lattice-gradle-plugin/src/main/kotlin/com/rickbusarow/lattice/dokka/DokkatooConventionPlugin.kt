@@ -28,6 +28,7 @@ import com.rickbusarow.lattice.conventions.HasJavaSubExtension
 import com.rickbusarow.lattice.conventions.HasKotlinSubExtension
 import com.rickbusarow.lattice.core.DefaultLatticeJavadocJarTask
 import com.rickbusarow.lattice.core.SEMVER_REGEX
+import com.rickbusarow.lattice.core.latticeSettings
 import com.rickbusarow.lattice.latticeExtension
 import dev.adamko.dokkatoo.DokkatooExtension
 import dev.adamko.dokkatoo.dokka.plugins.DokkaVersioningPluginParameters
@@ -85,7 +86,17 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
           }
         }
 
+        println("################## sourceset -- ${sourceSet.name}")
+        println("%%%%%%%%%%%%%%%")
+        println(target.latticeSettings)
+        println("%%%%%%%%%%%%%%%")
+
         sourceSet.sourceLink { sourceLinkBuilder ->
+
+          println(
+            "############# inside -- ${sourceSet.name}  ---  github url ->  ${gitHubSubExtension.url.orNull}"
+          )
+
           sourceLinkBuilder.localDirectory.set(target.file("src/${sourceSet.name}"))
 
           val modulePath = target.path.replace(":", "/")
@@ -96,6 +107,9 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
             gitHubSubExtension.url
               .map(::URI)
               .zip(gitHubSubExtension.defaultBranch) { uri, branch ->
+
+                println("############# ${sourceSet.name} -- $uri -- $branch")
+
                 uri.resolve("blob/$branch/$modulePath/src/${sourceSet.name}")
               }
           )

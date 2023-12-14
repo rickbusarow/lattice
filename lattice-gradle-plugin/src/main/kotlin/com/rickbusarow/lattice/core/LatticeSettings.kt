@@ -18,18 +18,72 @@ package com.rickbusarow.lattice.core
 import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
 import com.rickbusarow.kgx.gradleLazy
+import com.rickbusarow.lattice.core.SettingsElement.SettingsGroup
 import dev.drewhamilton.poko.Poko
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import org.jetbrains.kotlin.gradle.plugin.extraProperties
+import java.io.Serializable
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import kotlin.properties.ReadOnlyProperty
 
 @Suppress("MemberNameEqualsClassName")
 internal val Project.latticeSettings: LatticeSettings
   get() = extras.getOrPut("latticeSettings") {
     objects.newInstance(LatticeSettings::class.java)
   }
+
+public sealed interface SettingsElement : Serializable, Comparable<SettingsElement> {
+  public val name: String
+  public val parent: SettingsElement?
+
+  override fun compareTo(other: SettingsElement): Int = name.compareTo(other.name)
+
+  public abstract class SettingsGroup : SettingsElement {
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _children: ConcurrentHashMap<String, SettingsElement> =
+      ConcurrentHashMap<String, SettingsElement>()
+    public val children: List<SettingsElement>
+      get() = _children.values.sorted()
+
+    public inline fun <reified T : SettingsGroup> group(): ReadOnlyProperty<Any, T> {
+      return ReadOnlyProperty { _, property ->
+        _children.computeIfAbsent(property.name) {
+          T::class.constructors.single().call(property.name, this@SettingsGroup)
+        } as T
+      }
+    }
+
+    public inline fun <reified T> value(): ReadOnlyProperty<Any, Provider<T>> {
+      return ReadOnlyProperty { _, property ->
+
+        val element = _children.computeIfAbsent(property.name) {
+          SettingsValue<T>(property.name, this@SettingsGroup)
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        (element as SettingsValue<T>).value
+      }
+    }
+  }
+
+  @Poko
+  public class SettingsValue<T>(
+    override val name: String,
+    override val parent: SettingsElement?
+  ) : SettingsElement {
+    public val value: Provider<T> = TODO()
+  }
+}
+
+@Poko
+public class VersionsGroup(
+  override val name: String,
+  override val parent: SettingsElement?
+) : SettingsGroup()
 
 @Poko
 public open class LatticeSettings @Inject constructor(
@@ -127,5 +181,40 @@ public open class LatticeSettings @Inject constructor(
         public val url: Provider<String> = providers.gradleProperty("POM_DEVELOPER_URL")
       }
     }
+  }
+
+  override fun toString(): String {
+    return "LatticeSettings(\n" +
+      "  GROUP=${GROUP.orNull}\n" +
+      "  VERSION_NAME=${VERSION_NAME.orNull}\n" +
+      "  versions.dokka=${versions.dokka.orNull}\n" +
+      "  kotlin.apiLevel=${kotlin.apiLevel.orNull}\n" +
+      "  kotlin.allWarningsAsErrors=${kotlin.allWarningsAsErrors.orNull}\n" +
+      "  kotlin.explicitApi=${kotlin.explicitApi.orNull}\n" +
+      "  java.JVM_TARGET=${java.JVM_TARGET.orNull}\n" +
+      "  java.JVM_TARGET_INT=${java.JVM_TARGET_INT.orNull}\n" +
+      "  java.JVM_SOURCE=${java.JVM_SOURCE.orNull}\n" +
+      "  java.JVM_SOURCE_INT=${java.JVM_SOURCE_INT.orNull}\n" +
+      "  java.JVM_TOOLCHAIN=${java.JVM_TOOLCHAIN.orNull}\n" +
+      "  java.JVM_TOOLCHAIN_INT=${java.JVM_TOOLCHAIN_INT.orNull}\n" +
+      "  repository.defaultBranch=${repository.defaultBranch.orNull}\n" +
+      "  repository.github.owner=${repository.github.owner.orNull}\n" +
+      "  repository.github.repo=${repository.github.repo.orNull}\n" +
+      "  repository.github.url=${repository.github.url.orNull}\n" +
+      "  publishing.pom.artifactId=${publishing.pom.artifactId.orNull}\n" +
+      "  publishing.pom.name=${publishing.pom.name.orNull}\n" +
+      "  publishing.pom.description=${publishing.pom.description.orNull}\n" +
+      "  publishing.pom.inceptionYear=${publishing.pom.inceptionYear.orNull}\n" +
+      "  publishing.pom.url=${publishing.pom.url.orNull}\n" +
+      "  publishing.pom.license.name=${publishing.pom.license.name.orNull}\n" +
+      "  publishing.pom.license.url=${publishing.pom.license.url.orNull}\n" +
+      "  publishing.pom.license.dist=${publishing.pom.license.dist.orNull}\n" +
+      "  publishing.pom.scm.url=${publishing.pom.scm.url.orNull}\n" +
+      "  publishing.pom.scm.connection=${publishing.pom.scm.connection.orNull}\n" +
+      "  publishing.pom.scm.devConnection=${publishing.pom.scm.devConnection.orNull}\n" +
+      "  publishing.pom.developer.id=${publishing.pom.developer.id.orNull}\n" +
+      "  publishing.pom.developer.name=${publishing.pom.developer.name.orNull}\n" +
+      "  publishing.pom.developer.url=${publishing.pom.developer.url.orNull}\n" +
+      ")"
   }
 }

@@ -57,8 +57,8 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
       }
     }
 
-    target.registerCoordinatesStringsCheckTask(
-      groupId = target.group.toString(),
+    registerCoordinatesStringsCheckTask(
+      target = target,
       mavenPublications = target.mavenPublications
     )
     target.registerSnapshotVersionCheckTask()
@@ -74,12 +74,12 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
     }
   }
 
-  private fun Project.registerCoordinatesStringsCheckTask(
-    groupId: String,
+  private fun registerCoordinatesStringsCheckTask(
+    target: Project,
     mavenPublications: NamedDomainObjectSet<MavenPublication>
   ) {
 
-    val checkTask = tasks.registerOnce(
+    val checkTask = target.tasks.registerOnce(
       "checkMavenCoordinatesStrings",
       DefaultCheckTask::class.java
     ) { task ->
@@ -87,6 +87,8 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
       task.description = "checks that the project's maven group and artifact ID are valid for Maven"
 
       val artifactIds = mavenPublications.map { it.artifactId }
+
+      val groupId = target.group.toString()
 
       task.doLast {
 
@@ -116,7 +118,7 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
       }
     }
 
-    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { task ->
+    target.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { task ->
       task.dependsOn(checkTask)
     }
   }

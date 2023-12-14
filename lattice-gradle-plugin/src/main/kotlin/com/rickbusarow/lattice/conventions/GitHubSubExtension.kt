@@ -54,7 +54,10 @@ public interface GitHubSubExtension : SubExtension<GitHubSubExtension> {
 public abstract class DefaultGitHubSubExtension @Inject constructor(
   target: Project,
   objects: ObjectFactory
-) : AbstractSubExtension(target, objects), GitHubSubExtension, SubExtensionInternal, HasPublicType {
+) : AbstractSubExtension(target, objects),
+  GitHubSubExtension,
+  SubExtensionInternal,
+  HasPublicType {
 
   override fun getPublicType(): TypeOf<*> = typeOf(GitHubSubExtension::class.java)
 
