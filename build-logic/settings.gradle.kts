@@ -53,7 +53,11 @@ dependencyResolutionManagement {
   }
 }
 
-listOf("lattice-gradle-plugin").forEach { name ->
+listOf(
+  "lattice-gradle-plugin",
+  "lattice-settings-annotations",
+  "lattice-settings-generator"
+).forEach { name ->
   include(":$name")
   project(":$name").projectDir = file("../$name")
 }

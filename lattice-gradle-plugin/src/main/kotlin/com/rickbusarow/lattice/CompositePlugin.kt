@@ -18,7 +18,7 @@ package com.rickbusarow.lattice
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.internal.InternalGradleApiAccess
 import com.rickbusarow.kgx.internal.allIncludedProjects
-import com.rickbusarow.lattice.core.splitInclusive
+import com.rickbusarow.lattice.stdlib.splitInclusive
 import modulecheck.utils.mapToSet
 import org.gradle.api.Action
 import org.gradle.api.Plugin

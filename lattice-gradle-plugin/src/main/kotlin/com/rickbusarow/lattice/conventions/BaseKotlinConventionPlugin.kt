@@ -16,6 +16,7 @@
 package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.kgx.javaExtension
+import com.rickbusarow.lattice.config.latticeSettings
 import com.rickbusarow.lattice.core.JDK_INT
 import com.rickbusarow.lattice.core.JVM_TARGET
 import com.rickbusarow.lattice.core.JVM_TARGET_INT
@@ -30,7 +31,6 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
-import org.jetbrains.kotlin.gradle.tasks.BaseKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.Serializable
 import kotlin.jvm.java
@@ -111,15 +111,8 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
           add("-Xinline-classes")
           add("-Xcontext-receivers")
 
-          val sourceSetName = (task as? BaseKotlinCompile)?.sourceSetName?.orNull
-
-          val shouldBeStrict = when {
-            extension.explicitApi.orNull == false -> false
-            sourceSetName == "test" -> false
-            sourceSetName == null -> false
-            else -> true
-          }
-          if (shouldBeStrict) {
+          val explicitApiEnabled = target.latticeSettings.kotlin.explicitApi.orNull == true
+          if (explicitApiEnabled) {
             add("-Xexplicit-api=strict")
           }
         }
