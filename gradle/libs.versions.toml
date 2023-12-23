@@ -1,7 +1,8 @@
 [versions]
 
-kotlin = "1.9.22"
-poko = "0.15.0"
+kotlin = "1.9.21"
+poko = "0.15.1"
+ksp = "1.9.21-1.0.15"
 
 benManes-versions = "0.50.0"
 buildconfig = "5.2.0"
@@ -26,6 +27,7 @@ prettier = "2.8.4"
 prettier-plugin-sh = "0.12.8"
 rickBusarow-doks = "0.1.4"
 rickBusarow-github-release = "2.5.2"
+rickBusarow-kase = "0.4.0"
 rickBusarow-kgx = "0.1.9"
 rickBusarow-ktlint = "0.2.1"
 rickBusarow-ktrules = "1.2.1"
@@ -44,6 +46,7 @@ github-release = { id = "com.rickbusarow.github-release-fork", version.ref = "ri
 integration-test = { id = "com.coditory.integration-test", version.ref = "integration-test" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "com.rickbusarow.ktlint", version.ref = "rickBusarow-ktlint" }
 moduleCheck = { id = "com.rickbusarow.module-check", version.ref = "rickBusarow-moduleCheck" }
 poko = { id = "dev.drewhamilton.poko", version.ref = "poko" }
@@ -88,6 +91,10 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jUn
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jUnit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jUnit" }
 
+kase = { module = "com.rickbusarow.kase:kase", version.ref = "rickBusarow-kase" }
+kase-gradle = { module = "com.rickbusarow.kase:kase-gradle", version.ref = "rickBusarow-kase" }
+kase-gradle-dsl = { module = "com.rickbusarow.kase:kase-gradle-dsl", version.ref = "rickBusarow-kase" }
+
 kotest-assertions-api = { module = "io.kotest:kotest-assertions-api", version.ref = "kotest" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared", version.ref = "kotest" }
@@ -121,6 +128,9 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
+ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
+
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
 
 poko-annotations = { module = "dev.drewhamilton.poko:poko-annotations", version.ref = "poko" }
@@ -137,6 +147,7 @@ rickBusarow-ktrules48 = { module = "com.rickbusarow.ktrules:ktrules-48", version
 rickBusarow-moduleCheck-gradle-plugin = { module = "com.rickbusarow.modulecheck:plugin", version.ref = "rickBusarow-moduleCheck" }
 
 square-kotlinPoet = { module = "com.squareup:kotlinpoet", version.ref = "square-kotlinPoet" }
+square-kotlinPoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "square-kotlinPoet" }
 square-okio = { module = "com.squareup.okio:okio", version.ref = "square-okio" }
 vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
 

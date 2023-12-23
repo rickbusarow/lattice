@@ -13,11 +13,16 @@
  * limitations under the License.
  */
 
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode.Strict
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   `java-gradle-plugin`
   alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.ksp)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.poko)
+  idea
 }
 
 if (rootProject.name == "lattice") {
@@ -42,7 +47,6 @@ gradlePlugin {
       id = "com.rickbusarow.lattice.root"
       implementationClass = "com.rickbusarow.lattice.RootPlugin"
     }
-
     create("curator") {
       id = "com.rickbusarow.lattice.curator"
       implementationClass = "com.rickbusarow.lattice.curator.CuratorPlugin"
@@ -63,7 +67,7 @@ gradlePlugin {
     convention("dokkatoo", "DokkatooConventionPlugin")
     convention("dokka-versioning", "DokkaVersionArchivePlugin")
     convention("github-release", "GitHubReleasePlugin")
-    convention("integration-tests", "IntegrationTestsConventionPlugin")
+    convention("gradle-tests", "GradleTestsPlugin")
     convention("kotlin-jvm", "KotlinJvmConventionPlugin")
     convention("ktlint", "KtLintConventionPlugin")
     convention("spotless", "SpotlessConventionPlugin")
@@ -71,9 +75,63 @@ gradlePlugin {
   }
 }
 
+val gradleTest by sourceSets.registering {
+  val ss = this@registering
+
+  val main by sourceSets.getting
+
+  gradlePlugin.testSourceSets(ss)
+
+  ss.compileClasspath += main.output
+  ss.runtimeClasspath += main.output
+
+  configurations.named(ss.implementationConfigurationName) {
+    extendsFrom(configurations.getByName(main.implementationConfigurationName))
+  }
+  configurations.named(ss.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.getByName(main.runtimeOnlyConfigurationName))
+  }
+  configurations.named(ss.compileOnlyConfigurationName) {
+    extendsFrom(configurations.getByName(main.compileOnlyConfigurationName))
+  }
+}
+
+tasks.register("gradleTest", Test::class) {
+  useJUnitPlatform()
+
+  val javaSourceSet = gradleTest.get()
+
+  testClassesDirs = javaSourceSet.output.classesDirs
+  classpath = javaSourceSet.runtimeClasspath
+  inputs.files(javaSourceSet.allSource)
+}
+
+tasks.named("check") { dependsOn("gradleTest") }
+
+idea {
+  module {
+    testSources.from(gradleTest.map { it.allSource.srcDirs })
+  }
+}
+
+val gradleTestImplementation: Configuration by configurations.getting
+
 dependencies {
 
   compileOnly(gradleApi())
+
+  compileOnly(project(":lattice-settings-annotations"))
+
+  gradleTestImplementation(libs.junit.engine)
+  gradleTestImplementation(libs.junit.jupiter)
+  gradleTestImplementation(libs.junit.jupiter.api)
+  gradleTestImplementation(libs.junit.params)
+  gradleTestImplementation(libs.kase)
+  gradleTestImplementation(libs.kase.gradle)
+  gradleTestImplementation(libs.kase.gradle.dsl)
+  gradleTestImplementation(libs.kotest.assertions.api)
+  gradleTestImplementation(libs.kotest.assertions.core.jvm)
+  gradleTestImplementation(libs.kotest.assertions.shared)
 
   implementation(libs.benManes.versions)
   implementation(libs.detekt.gradle)
@@ -84,9 +142,6 @@ dependencies {
   implementation(libs.dokkatoo.plugin)
   implementation(libs.dropbox.dependencyGuard)
   implementation(libs.ec4j.core)
-  implementation(libs.integration.test) {
-    exclude(group = "org.jetbrains.kotlin")
-  }
   implementation(libs.johnrengelman.shadowJar)
   implementation(libs.kotlin.gradle.plugin)
   implementation(libs.kotlin.gradle.plugin.api)
@@ -103,4 +158,21 @@ dependencies {
     exclude(group = "org.jetbrains.kotlin")
   }
   implementation(libs.vanniktech.publish)
+
+  ksp(project(":lattice-settings-generator"))
+
+  testImplementation(libs.junit.engine)
+  testImplementation(libs.junit.jupiter)
+  testImplementation(libs.junit.jupiter.api)
+  testImplementation(libs.junit.params)
+  testImplementation(libs.kase)
+  testImplementation(libs.kotest.assertions.api)
+  testImplementation(libs.kotest.assertions.core.jvm)
+  testImplementation(libs.kotest.assertions.shared)
+}
+
+tasks.named("compileKotlin", KotlinCompile::class) {
+  kotlinOptions {
+    explicitApiMode.set(Strict)
+  }
 }

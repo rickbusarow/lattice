@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import org.gradle.plugins.ide.idea.model.IdeaModel
+
 plugins {
   alias(libs.plugins.poko) apply false
   alias(libs.plugins.kotlin.jvm) apply false
@@ -35,29 +37,31 @@ lattice {
   }
 }
 
-val ktlintPluginId = libs.plugins.ktlint.get().pluginId
+if (gradle.includedBuilds.any { it.name == "build-logic" }) {
+  subprojects sub@{
 
-allprojects ap@{
-  version = property("VERSION_NAME") as String
+    val sub = this@sub
 
-  val innerProject = this@ap
+    sub.plugins.withId("build-init") {
 
-  apply(plugin = ktlintPluginId)
+      val ktlintPluginId = libs.plugins.ktlint.get().pluginId
 
-  dependencies {
-    "ktlint"(rootProject.libs.rickBusarow.ktrules)
+      sub.apply(plugin = ktlintPluginId)
+
+      dependencies {
+        "ktlint"(libs.rickBusarow.ktrules)
+      }
+    }
+
+    sub.layout.buildDirectory.set(sub.file("build/build-main"))
+
+    sub.apply(plugin = "idea")
+
+    sub.extensions.configure(IdeaModel::class) {
+      module {
+        generatedSourceDirs.add(sub.file("build"))
+        excludeDirs.add(sub.file("build"))
+      }
+    }
   }
-
-  // if (innerProject != rootProject) {
-  //   rootProject.tasks.named("ktlintCheck") {
-  //     dependsOn(innerProject.tasks.named("ktlintCheck"))
-  //   }
-  //   rootProject.tasks.named("ktlintFormat") {
-  //     dependsOn(innerProject.tasks.named("ktlintFormat"))
-  //   }
-  // }
-}
-
-tasks.named("clean") {
-  dependsOn(gradle.includedBuild("build-logic").task(":clean"))
 }

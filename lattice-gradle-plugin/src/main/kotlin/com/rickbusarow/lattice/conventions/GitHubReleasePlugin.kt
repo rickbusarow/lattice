@@ -20,8 +20,8 @@ import com.github.breadmoirai.githubreleaseplugin.GithubReleasePlugin
 import com.rickbusarow.kgx.applyOnce
 import com.rickbusarow.lattice.core.SEMVER_REGEX
 import com.rickbusarow.lattice.core.VERSION_NAME
-import com.rickbusarow.lattice.core.splitInclusive
 import com.rickbusarow.lattice.core.versionIsSnapshot
+import com.rickbusarow.lattice.stdlib.splitInclusive
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project

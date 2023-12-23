@@ -36,7 +36,7 @@ plugins {
 val kotlinApiVersion = project.property("KOTLIN_API").toString()
 
 subprojects sub@{
-  this@sub.layout.buildDirectory.set(this@sub.file("build-composite"))
+  this@sub.layout.buildDirectory.set(this@sub.file("build/build-included"))
 }
 
 allprojects ap@{

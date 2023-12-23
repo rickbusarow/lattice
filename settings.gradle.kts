@@ -83,5 +83,7 @@ gradleEnterprise {
 }
 
 include(":lattice-gradle-plugin")
+include(":lattice-settings-annotations")
+include(":lattice-settings-generator")
 
 includeBuild("build-logic")
