@@ -20,7 +20,9 @@ import com.rickbusarow.lattice.config.latticeSettings
 import com.rickbusarow.lattice.core.JDK_INT
 import com.rickbusarow.lattice.core.JVM_TARGET
 import com.rickbusarow.lattice.core.JVM_TARGET_INT
+import com.rickbusarow.lattice.core.JVM_TOOLCHAIN_INT
 import com.rickbusarow.lattice.core.KOTLIN_API
+import com.rickbusarow.lattice.latticeExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -33,16 +35,12 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.Serializable
-import kotlin.jvm.java
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile as KotlinCompileDsl
 
-@Suppress("UndocumentedPublicClass")
 public interface KotlinJvmExtension : KotlinExtension
 
-@Suppress("UndocumentedPublicClass")
 public interface KotlinMultiplatformExtension : KotlinExtension
 
-@Suppress("UndocumentedPublicClass")
 public interface KotlinExtension : Serializable {
 
   @Suppress("UndocumentedPublicProperty")
@@ -52,15 +50,14 @@ public interface KotlinExtension : Serializable {
   public val explicitApi: Property<Boolean>
 }
 
-@Suppress("UndocumentedPublicClass")
 public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
 
-    val extension = target.extensions.getByType(KotlinExtension::class.java)
+    val extension = (target.latticeExtension as HasKotlinSubExtension).kotlin
 
     val jetbrainsExtension = target.kotlinExtension
-    jetbrainsExtension.jvmToolchain(target.JDK_INT)
+    jetbrainsExtension.jvmToolchain(target.JVM_TOOLCHAIN_INT)
 
     configureKotlinOptions(target, extension)
 
@@ -91,11 +88,13 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
     }
   }
 
-  private fun configureKotlinOptions(target: Project, extension: KotlinExtension) {
+  private fun configureKotlinOptions(target: Project, extension: KotlinSubExtension) {
+
     target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
       task.kotlinOptions.jvmTarget = target.JVM_TARGET
     }
     target.tasks.withType(KotlinCompileDsl::class.java).configureEach { task ->
+
       task.kotlinOptions {
 
         options.allWarningsAsErrors.set(extension.allWarningsAsErrors.orElse(false))

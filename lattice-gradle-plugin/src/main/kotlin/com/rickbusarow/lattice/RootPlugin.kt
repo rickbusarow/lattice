@@ -17,7 +17,9 @@ package com.rickbusarow.lattice
 
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.inCI
+import com.rickbusarow.kgx.internal.InternalGradleApiAccess
 import com.rickbusarow.kgx.isRealRootProject
+import com.rickbusarow.lattice.composite.CompositePlugin
 import com.rickbusarow.lattice.conventions.BenManesVersionsPlugin
 import com.rickbusarow.lattice.conventions.DokkaVersionArchivePlugin
 import com.rickbusarow.lattice.conventions.GitHubReleasePlugin
@@ -26,9 +28,11 @@ import com.rickbusarow.lattice.curator.CuratorPlugin
 import modulecheck.gradle.ModuleCheckExtension
 import modulecheck.gradle.ModuleCheckPlugin
 import org.gradle.api.Project
+import javax.inject.Inject
 
 /** Applied to the real project root and the root project of any included build except this one. */
-public abstract class RootPlugin : BaseModulePlugin() {
+public abstract class RootPlugin @Inject constructor() : BaseModulePlugin() {
+
   override fun apply(target: Project) {
 
     target.checkProjectIsRoot()
@@ -53,6 +57,7 @@ public abstract class RootPlugin : BaseModulePlugin() {
     }
 
     if (target.gradle.includedBuilds.isNotEmpty()) {
+      @OptIn(InternalGradleApiAccess::class)
       target.plugins.apply(CompositePlugin::class.java)
     }
 

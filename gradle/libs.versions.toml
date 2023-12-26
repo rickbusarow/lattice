@@ -14,9 +14,12 @@ dokkatoo = "2.0.0"
 dropbox-dependencyGuard = "0.4.3"
 ec4j = "0.3.0"
 github-release = "2.5.2"
+gradle-plugin-publish = "1.1.0"
+gradlex-buildParameters = "1.4.3"
 integration-test = "1.4.5"
 jUnit = "5.10.1"
 johnrengelman-shadow = "8.1.1"
+koin = "3.5.1"
 kotest = "5.8.0"
 kotlinx-binaryCompatibility = "0.13.2"
 kotlinx-coroutines = "1.7.3"
@@ -31,35 +34,46 @@ rickBusarow-kase = "0.4.0"
 rickBusarow-kgx = "0.1.9"
 rickBusarow-ktlint = "0.2.1"
 rickBusarow-ktrules = "1.2.1"
+rickBusarow-lattice = "0.1.0-SNAPSHOT"
 rickBusarow-moduleCheck = "0.12.5"
 square-kotlinPoet = "1.15.3"
 square-okio = "3.7.0"
 vanniktech-publish = "0.26.0"
 
 [plugins]
+
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 dokkatoo = { id = "dev.adamko.dokkatoo", version.ref = "dokkatoo" }
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }
 doks = { id = "com.rickbusarow.doks", version.ref = "rickBusarow-doks" }
 github-release = { id = "com.rickbusarow.github-release-fork", version.ref = "rickBusarow-github-release" }
+gradlex-buildParameters = { id = "org.gradlex.build-parameters", version.ref = "gradlex-buildParameters" }
 integration-test = { id = "com.coditory.integration-test", version.ref = "integration-test" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "com.rickbusarow.ktlint", version.ref = "rickBusarow-ktlint" }
+
+lattice-composite = { id = "com.rickbusarow.lattice.composite", version.ref = "rickBusarow-lattice" }
+lattice-java-gradle-plugin = { id = "com.rickbusarow.lattice.java-gradle-plugin", version.ref = "rickBusarow-lattice" }
+lattice-kotlin-jvm = { id = "com.rickbusarow.lattice.kotlin-jvm", version.ref = "rickBusarow-lattice" }
+lattice-kotlin-multiplatform = { id = "com.rickbusarow.lattice.kotlin-multiplatform", version.ref = "rickBusarow-lattice" }
+lattice-root = { id = "com.rickbusarow.lattice.root", version.ref = "rickBusarow-lattice" }
+
 moduleCheck = { id = "com.rickbusarow.module-check", version.ref = "rickBusarow-moduleCheck" }
+plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 poko = { id = "dev.drewhamilton.poko", version.ref = "poko" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "johnrengelman-shadow" }
+vanniktech-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "vanniktech-publish" }
 
 [libraries]
 
 benManes-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "benManes-versions" }
 
-breadmoirai-github-release = { module = "com.github.breadmoirai:github-release", version.ref = "github-release" }
+breadmoirai-github-release = { module = "com.rickbusarow.githubreleasepluginfork:github-release", version.ref = "rickBusarow-github-release" }
 
 buildconfig = { module = "com.github.gmazzo:gradle-buildconfig-plugin", version.ref = "buildconfig" }
-
-dependency-analysis-gradle-plugin = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 
 detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
 detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
@@ -82,6 +96,8 @@ dropbox-dependencyGuard = { module = "com.dropbox.dependency-guard:dependency-gu
 
 ec4j-core = { module = "org.ec4j.core:ec4j-core", version.ref = "ec4j" }
 
+gradlex-buildParameters = { module = "org.gradlex:build-parameters", version.ref = "gradlex-buildParameters" }
+
 integration-test = { module = "com.coditory.gradle:integration-test-plugin", version.ref = "integration-test" }
 
 johnrengelman-shadowJar = { module = "com.github.johnrengelman:shadow", version.ref = "johnrengelman-shadow" }
@@ -94,6 +110,8 @@ junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref 
 kase = { module = "com.rickbusarow.kase:kase", version.ref = "rickBusarow-kase" }
 kase-gradle = { module = "com.rickbusarow.kase:kase-gradle", version.ref = "rickBusarow-kase" }
 kase-gradle-dsl = { module = "com.rickbusarow.kase:kase-gradle-dsl", version.ref = "rickBusarow-kase" }
+
+koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
 kotest-assertions-api = { module = "io.kotest:kotest-assertions-api", version.ref = "kotest" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
@@ -149,7 +167,10 @@ rickBusarow-moduleCheck-gradle-plugin = { module = "com.rickbusarow.modulecheck:
 square-kotlinPoet = { module = "com.squareup:kotlinpoet", version.ref = "square-kotlinPoet" }
 square-kotlinPoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "square-kotlinPoet" }
 square-okio = { module = "com.squareup.okio:okio", version.ref = "square-okio" }
+
+vanniktech-publish-nexus = { module = "com.vanniktech:nexus", version.ref = "vanniktech-publish" }
 vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
+vanniktech-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
 
 [bundles]
 jUnit = [

@@ -52,7 +52,7 @@ output-reports:
 
 comments:
   active: true
-  excludes: ["**/build-logic/**"]
+  excludes: ["**/build-logic/**", "**/*.gradle.kts"]
   AbsentOrWrongFileLicense:
     active: true
     licenseTemplateFile: "license.template"

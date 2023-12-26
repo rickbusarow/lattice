@@ -21,7 +21,18 @@ import com.rickbusarow.kgx.pluginId
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleVersionSelector
 
-@Suppress("UndocumentedPublicClass")
+public interface HasCodeGenExtension {
+  public val codeGen: CodeGenSubExtension
+}
+
+public interface CodeGenSubExtension {
+  // public val generate: GenerateExtension
+}
+
+public interface HasPokoExtension {
+  public val poko: PokoExtension
+}
+
 public interface PokoExtension {
 
   @Suppress("UndocumentedPublicFunction")

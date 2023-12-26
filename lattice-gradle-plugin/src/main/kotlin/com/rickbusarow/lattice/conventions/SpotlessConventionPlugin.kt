@@ -22,19 +22,17 @@ import com.diffplug.gradle.spotless.JsonExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessPlugin
 import com.diffplug.gradle.spotless.SpotlessTask
-import com.rickbusarow.kgx.EagerGradleApi
-import com.rickbusarow.kgx.allProjectsTasksMatchingName
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.libsCatalog
 import com.rickbusarow.kgx.version
+import com.rickbusarow.lattice.core.PluginIds
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.tasks.util.PatternFilterable
 
-@Suppress("UndocumentedPublicClass")
 public abstract class SpotlessConventionPlugin : Plugin<Project> {
-  @OptIn(EagerGradleApi::class)
+
   override fun apply(target: Project) {
 
     target.checkProjectIsRoot()
@@ -43,9 +41,19 @@ public abstract class SpotlessConventionPlugin : Plugin<Project> {
 
     target.tasks.withType(SpotlessTask::class.java).configureEach { spotlessTask ->
       spotlessTask.mustRunAfter(":curatorDump")
-      spotlessTask.mustRunAfter(target.allProjectsTasksMatchingName("apiDump"))
-      spotlessTask.mustRunAfter(target.allProjectsTasksMatchingName("dependencyGuard"))
-      spotlessTask.mustRunAfter(target.allProjectsTasksMatchingName("dependencyGuardBaseline"))
+
+      target.allprojects
+        .filter { it.plugins.hasPlugin(PluginIds.kotlinx.binary.compatibility.validator) }
+        .forEach { subproject ->
+          spotlessTask.mustRunAfter(subproject.tasks.named("apiDump"))
+        }
+
+      target.allprojects
+        .filter { it.plugins.hasPlugin(PluginIds.dropbox.dependency.guard) }
+        .forEach { subproject ->
+          spotlessTask.mustRunAfter(subproject.tasks.named("dependencyGuard"))
+          spotlessTask.mustRunAfter(subproject.tasks.named("dependencyGuardBaseline"))
+        }
     }
 
     target.extensions.configure(SpotlessExtension::class.java) { spotless ->

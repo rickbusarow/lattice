@@ -15,14 +15,21 @@
 
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
+buildscript {
+  dependencies {
+    classpath(libs.rickBusarow.kgx)
+  }
+}
+
 plugins {
   alias(libs.plugins.poko) apply false
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.serialization) apply false
   alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.doks)
+  alias(libs.plugins.vanniktech.publish) apply false
   alias(libs.plugins.moduleCheck)
-  id("com.rickbusarow.lattice.jvm-module") apply false
+  id("com.rickbusarow.lattice.kotlin-jvm") apply false
   id("com.rickbusarow.lattice.root")
 }
 
@@ -32,8 +39,13 @@ moduleCheck {
 }
 
 lattice {
-
   composite {
+  }
+  github {
+  }
+  dokka {
+  }
+  java {
   }
 }
 

@@ -13,14 +13,25 @@
  * limitations under the License.
  */
 
+
+@file:Suppress("VariableNaming")
+
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode.Strict
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.rickbusarow.kgx.extras
+
+buildscript {
+  dependencies {
+    classpath(libs.rickBusarow.kgx)
+  }
+}
+
 
 plugins {
   `java-gradle-plugin`
   alias(libs.plugins.kotlin.jvm)
-  alias(libs.plugins.ksp)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.ksp)
   alias(libs.plugins.poko)
   idea
 }
@@ -29,50 +40,13 @@ if (rootProject.name == "lattice") {
   apply(plugin = "com.rickbusarow.lattice.jvm-module")
 }
 
-gradlePlugin {
-  plugins {
-    create("composite") {
-      id = "com.rickbusarow.lattice.composite"
-      implementationClass = "com.rickbusarow.lattice.CompositePlugin"
-    }
-    create("jvm") {
-      id = "com.rickbusarow.lattice.jvm-module"
-      implementationClass = "com.rickbusarow.lattice.KotlinJvmModulePlugin"
-    }
-    create("kmp") {
-      id = "com.rickbusarow.lattice.kmp-module"
-      implementationClass = "com.rickbusarow.lattice.KotlinMultiplatformModulePlugin"
-    }
-    create("root") {
-      id = "com.rickbusarow.lattice.root"
-      implementationClass = "com.rickbusarow.lattice.RootPlugin"
-    }
-    create("curator") {
-      id = "com.rickbusarow.lattice.curator"
-      implementationClass = "com.rickbusarow.lattice.curator.CuratorPlugin"
-    }
-
-    fun convention(suffix: String, simpleClassName: String) {
-      create("convention.$suffix") {
-        id = "com.rickbusarow.lattice.$suffix"
-        implementationClass = "com.rickbusarow.lattice.conventions.$simpleClassName"
-      }
-    }
-
-    convention("ben-manes", "BenManesVersionsPlugin")
-    convention("check", "CheckPlugin")
-    convention("clean", "CleanPlugin")
-    convention("dependency-guard", "DependencyGuardConventionPlugin")
-    convention("detekt", "DetektConventionPlugin")
-    convention("dokkatoo", "DokkatooConventionPlugin")
-    convention("dokka-versioning", "DokkaVersionArchivePlugin")
-    convention("github-release", "GitHubReleasePlugin")
-    convention("gradle-tests", "GradleTestsPlugin")
-    convention("kotlin-jvm", "KotlinJvmConventionPlugin")
-    convention("ktlint", "KtLintConventionPlugin")
-    convention("spotless", "SpotlessConventionPlugin")
-    convention("test", "TestConventionPlugin")
+buildConfig {
+  packageName.set("com.rickbusarow.lattice")
+  useKotlinOutput {
+    internalVisibility = true
   }
+
+  buildConfigField("String", "pokoVersion", "\"${libs.versions.poko.get()}\"")
 }
 
 val gradleTest by sourceSets.registering {
@@ -157,10 +131,10 @@ dependencies {
   implementation(libs.rickBusarow.moduleCheck.gradle.plugin) {
     exclude(group = "org.jetbrains.kotlin")
   }
+
   implementation(libs.vanniktech.publish)
-
+  implementation(libs.vanniktech.publish.nexus)
   ksp(project(":lattice-settings-generator"))
-
   testImplementation(libs.junit.engine)
   testImplementation(libs.junit.jupiter)
   testImplementation(libs.junit.jupiter.api)
@@ -169,6 +143,95 @@ dependencies {
   testImplementation(libs.kotest.assertions.api)
   testImplementation(libs.kotest.assertions.core.jvm)
   testImplementation(libs.kotest.assertions.shared)
+}
+
+val GITHUB_OWNER: String by project
+val DEVELOPER_URL: String by project
+val DEVELOPER_NAME: String by project
+val GITHUB_OWNER_REPO: String by project
+
+fun PluginDeclaration.tags(vararg v: String) {
+  @Suppress("UnstableApiUsage")
+  tags.set(v.toList())
+}
+
+gradlePlugin {
+
+  plugins {
+
+    register("root") {
+      id = "com.rickbusarow.lattice.root"
+      implementationClass = "com.rickbusarow.lattice.RootPlugin"
+      description = "Convention plugin for the root project of a multi-module build"
+      tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
+    }
+    register("java-gradle-plugin") {
+      id = "com.rickbusarow.lattice.java-gradle-plugin"
+      implementationClass = "com.rickbusarow.lattice.GradlePluginModulePlugin"
+      description = "Convention plugin for a java-gradle-plugin project"
+      tags("convention-plugin", "kotlin", "plugin", "java", "jvm", "kotlin-jvm")
+    }
+    register("jvm") {
+      id = "com.rickbusarow.lattice.kotlin-jvm"
+      implementationClass = "com.rickbusarow.lattice.KotlinJvmModulePlugin"
+      description = "Convention plugin for a Kotlin JVM project"
+      tags("convention-plugin", "kotlin", "java", "jvm", "kotlin-jvm")
+    }
+    register("kmp") {
+      id = "com.rickbusarow.lattice.kotlin-multiplatform"
+      implementationClass = "com.rickbusarow.lattice.KotlinMultiplatformModulePlugin"
+      description = "Convention plugin for a Kotlin Multiplatform project"
+      tags("convention-plugin", "kotlin", "multiplatform", "kotlin-multiplatform")
+    }
+  }
+}
+
+if (rootProject.name == "lattice") {
+
+  apply(plugin = "com.rickbusarow.lattice.java-gradle-plugin")
+  apply(plugin = libs.plugins.vanniktech.publish.get().pluginId)
+
+  gradlePlugin {
+
+    val GITHUB_REPOSITORY: String by project
+    @Suppress("UnstableApiUsage")
+    vcsUrl.set(GITHUB_REPOSITORY)
+    @Suppress("UnstableApiUsage")
+    website.set(GITHUB_REPOSITORY)
+  }
+
+  fun MavenPublication.isPluginMarker(): Boolean = name.endsWith("PluginMarkerMaven")
+  fun Publication.isPluginMarker(): Boolean = (this as? MavenPublication)?.isPluginMarker() ?: false
+
+  publishing {
+    publications.withType<MavenPublication>().configureEach pub@{
+      val publication = this@pub
+
+      publication.groupId = project.group as String
+
+      if (!publication.isPluginMarker()) {
+        publication.artifactId = "lattice-gradle-plugin"
+        publication.pom.description.set("Convention plugins for Gradle builds")
+      }
+    }
+
+    repositories {
+      maven {
+        name = "buildM2"
+        setUrl(layout.buildDirectory.dir("m2"))
+      }
+    }
+  }
+
+  tasks.register("publishToBuildM2") {
+    group = "Publishing"
+    dependsOn("publishAllPublicationsToBuildM2Repository")
+  }
+  tasks.register("publishToBuildM2NoDokka") {
+    group = "Publishing"
+    project.extras.set("skipDokka", true)
+    dependsOn("publishAllPublicationsToBuildM2Repository")
+  }
 }
 
 tasks.named("compileKotlin", KotlinCompile::class) {
