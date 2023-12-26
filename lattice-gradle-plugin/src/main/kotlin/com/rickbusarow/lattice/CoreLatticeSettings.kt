@@ -15,7 +15,7 @@
 
 package com.rickbusarow.lattice
 
-import com.rickbusarow.lattice.core.latticeSettings
+import com.rickbusarow.lattice.config.latticeSettings
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -32,8 +32,8 @@ public open class DefaultCoreLatticeSettings @Inject constructor(
 ) : CoreLatticeSettings {
 
   override val group: Property<String> = objects.property(String::class.java)
-    .convention(target.latticeSettings.GROUP)
+    .convention(target.latticeSettings.group)
 
   override val versionName: Property<String> = objects.property(String::class.java)
-    .convention(target.latticeSettings.VERSION_NAME)
+    .convention(target.latticeSettings.versionName)
 }

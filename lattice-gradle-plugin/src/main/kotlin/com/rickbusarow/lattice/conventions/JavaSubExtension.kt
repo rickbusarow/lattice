@@ -57,15 +57,15 @@ public abstract class DefaultJavaSubExtension @Inject constructor(
   SubExtensionInternal {
 
   final override val jvmTarget: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.java.JVM_TARGET)
+    .convention(latticeSettings.java.jvmTarget)
   override val jvmTargetInt: Provider<Int> = jvmTarget.map { it.substringAfterLast('.').toInt() }
 
   final override val jvmSource: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.java.JVM_SOURCE)
+    .convention(latticeSettings.java.jvmSource)
   override val jvmSourceInt: Provider<Int> = jvmSource.map { it.substringAfterLast('.').toInt() }
 
   final override val jvmToolchain: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.java.JVM_TOOLCHAIN)
+    .convention(latticeSettings.java.jvmToolchain)
   override val jvmToolchainInt: Provider<Int> = jvmToolchain.map {
     it.substringAfterLast('.').toInt()
   }

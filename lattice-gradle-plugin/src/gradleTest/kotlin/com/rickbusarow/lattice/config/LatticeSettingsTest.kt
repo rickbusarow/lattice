@@ -17,6 +17,7 @@ package com.rickbusarow.lattice.config
 
 import com.rickbusarow.kase.gradle.GradleTestVersions
 import com.rickbusarow.lattice.LatticeGradleTest
+import io.kotest.matchers.collections.shouldContainAll
 import org.junit.jupiter.api.TestFactory
 import java.io.File
 
@@ -26,7 +27,7 @@ class LatticeSettingsTest : LatticeGradleTest<GradleTestVersions> {
     get() = versionMatrix.versions(GradleTestVersions).takeLast(1)
 
   @TestFactory
-  fun `canary thing`() = testFactory {
+  fun `vanniktech publishing properties become lattice properties`() = testFactory {
 
     rootProject {
 
@@ -40,7 +41,7 @@ class LatticeSettingsTest : LatticeGradleTest<GradleTestVersions> {
 
         val ls = latticeSettings
 
-        val foo by tasks.registering {
+        val printSettings by tasks.registering {
           doLast {
             println(ls)
           }
@@ -55,28 +56,50 @@ class LatticeSettingsTest : LatticeGradleTest<GradleTestVersions> {
 
       gradlePropertiesFile(
         """
-        VERSION_NAME=0.1.0-SNAPSHOT
+        lattice.versionName=0.1.0-SNAPSHOT
 
-        GROUP=com.rickbusarow.lattice
+        POM_ARTIFACT_ID=pom artifact id
+        POM_NAME=pom name
+        POM_DESCRIPTION=pom description
+        POM_INCEPTION_YEAR=pom inception year
+        POM_URL=pom url
 
-        GITHUB_OWNER=rickbusarow
-        DEVELOPER_NAME=Rick Busarow
-        DEVELOPER_URL=https://github.com/rbusarow
-        GITHUB_OWNER_REPO=rbusarow/lattice
-        GITHUB_REPOSITORY=https://github.com/rbusarow/lattice
+        POM_LICENSE_NAME=pom license name
+        POM_LICENSE_URL=pom license url
+        POM_LICENSE_DIST=pom license dist
 
-        KOTLIN_API=1.7
+        POM_SCM_URL=pom scm url
+        POM_SCM_CONNECTION=pom scm connection
+        POM_SCM_DEV_CONNECTION=pom scm dev connection
 
-        JDK_BUILD_LOGIC=17
-        JVM_TARGET_BUILD_LOGIC=11
-
-        JDK=17
-        JVM_TARGET=11
-
+        POM_DEVELOPER_ID=pom developer id
+        POM_DEVELOPER_NAME=pom developer name
+        POM_DEVELOPER_URL=pom developer url
         """.trimIndent()
       )
     }
 
-    shouldSucceed("foo", withPluginClasspath = true)
+    shouldSucceed("printSettings", withPluginClasspath = true) {
+      output.substringAfterLast("> :printSettings")
+        .substringBefore("BUILD SUCCESSFUL")
+        .lineSequence()
+        .filter { it.isNotBlank() }
+        .toList() shouldContainAll listOf(
+        "lattice.publishing.pom.artifactId=pom artifact id",
+        "lattice.publishing.pom.name=pom name",
+        "lattice.publishing.pom.description=pom description",
+        "lattice.publishing.pom.inceptionYear=pom inception year",
+        "lattice.publishing.pom.url=pom url",
+        "lattice.publishing.pom.license.name=pom license name",
+        "lattice.publishing.pom.license.url=pom license url",
+        "lattice.publishing.pom.license.dist=pom license dist",
+        "lattice.publishing.pom.scm.url=pom scm url",
+        "lattice.publishing.pom.scm.connection=pom scm connection",
+        "lattice.publishing.pom.scm.devConnection=pom scm dev connection",
+        "lattice.publishing.pom.developer.id=pom developer id",
+        "lattice.publishing.pom.developer.name=pom developer name",
+        "lattice.publishing.pom.developer.url=pom developer url"
+      )
+    }
   }
 }

@@ -15,6 +15,7 @@
 
 package com.rickbusarow.lattice.conventions
 
+import com.rickbusarow.lattice.config.url
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
 import org.gradle.api.Action

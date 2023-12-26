@@ -28,7 +28,7 @@
   },
   {
     "gradlePath": ":lattice-gradle-plugin",
-    "group": "com.rickbusarow.lattice",
+    "group": "lattice",
     "artifactId": "lattice-gradle-plugin",
     "description": "Convention plugins for Gradle builds",
     "packaging": "jar",

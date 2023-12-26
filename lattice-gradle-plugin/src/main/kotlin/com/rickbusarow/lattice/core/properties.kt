@@ -17,35 +17,35 @@ package com.rickbusarow.lattice.core
 
 import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
+import com.rickbusarow.lattice.config.jvmTargetInt
+import com.rickbusarow.lattice.config.jvmToolchainInt
+import com.rickbusarow.lattice.config.latticeSettings
+import com.rickbusarow.lattice.config.url
 import org.gradle.api.Project
 
 /**  */
 public val Project.VERSION_NAME: String
-  get() = property("VERSION_NAME") as String
+  get() = latticeSettings.versionName.get()
 
 /**  */
 public val Project.versionIsSnapshot: Boolean
   get() = extras.getOrPut("versionIsSnapshot") { VERSION_NAME.endsWith("-SNAPSHOT") }
 
-/**  */
-public val Project.GROUP: String
-  get() = property("GROUP") as String
-
 /** "1.6", "1.7", "1.8", etc. */
 public val Project.KOTLIN_API: String
-  get() = property("KOTLIN_API") as String
+  get() = latticeSettings.kotlin.apiLevel.get()
 
 /** ex: `square` */
 public val Project.GITHUB_OWNER: String
-  get() = property("GITHUB_OWNER") as String
+  get() = latticeSettings.repository.github.owner.get()
 
 /** ex: `square/logcat` */
 public val Project.GITHUB_OWNER_REPO: String
-  get() = property("GITHUB_OWNER_REPO") as String
+  get() = latticeSettings.repository.github.repo.get()
 
 /** ex: `https://github.com/square/okio` */
 public val Project.GITHUB_REPOSITORY: String
-  get() = property("GITHUB_REPOSITORY") as String
+  get() = latticeSettings.repository.github.url.get()
 
 /**
  * the jdk used in packaging
@@ -53,11 +53,11 @@ public val Project.GITHUB_REPOSITORY: String
  * "1.6", "1.8", "11", etc.
  */
 public val Project.JVM_TARGET: String
-  get() = property("JVM_TARGET") as String
+  get() = latticeSettings.java.jvmTarget.get()
 
 /** `6`, `8`, `11`, etc. */
 public val Project.JVM_TARGET_INT: Int
-  get() = JVM_TARGET.substringAfterLast('.').toInt()
+  get() = latticeSettings.java.jvmTargetInt.get()
 
 /**
  * the jdk used to build the project
@@ -65,7 +65,7 @@ public val Project.JVM_TARGET_INT: Int
  * "1.6", "1.8", "11", etc.
  */
 public val Project.JVM_TOOLCHAIN: String
-  get() = property("JVM_TOOLCHAIN") as String
+  get() = latticeSettings.java.jvmToolchain.get()
 
 /**
  * the jdk used to build the project
@@ -73,7 +73,7 @@ public val Project.JVM_TOOLCHAIN: String
  * "1.6", "1.8", "11", etc.
  */
 internal val Project.JVM_TOOLCHAIN_INT: Int
-  get() = JVM_TOOLCHAIN.substringAfterLast('.').toInt()
+  get() = latticeSettings.java.jvmToolchainInt.get()
 
 /**
  * Finds a property that's prefixed with the 'commonPrefix'

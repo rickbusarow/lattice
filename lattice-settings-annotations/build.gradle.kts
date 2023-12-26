@@ -18,7 +18,7 @@ plugins {
 }
 
 if (rootProject.name == "lattice") {
-  apply(plugin = "com.rickbusarow.lattice.jvm-module")
+  apply(plugin = "com.rickbusarow.lattice.kotlin-jvm")
 }
 
 dependencies {

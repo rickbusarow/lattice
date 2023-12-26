@@ -38,6 +38,7 @@ internal class Names {
   val gradleProviderBoolean by lazy(NONE) {
     gradleProvider.parameterizedBy(boolean)
   }
+  val gradleObjectFactory = ClassName("org.gradle.api", "ObjectFactory")
   val gradleProviderFactory =
     ClassName("org.gradle.api.provider", "ProviderFactory")
   val gradleProviderInt by lazy(NONE) { gradleProvider.parameterizedBy(int) }

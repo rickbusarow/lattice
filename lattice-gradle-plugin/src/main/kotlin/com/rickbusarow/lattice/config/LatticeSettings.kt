@@ -18,6 +18,8 @@ package com.rickbusarow.lattice.config
 import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
 import com.rickbusarow.lattice.config.LatticeSettings.JavaSettingsGroup
+import com.rickbusarow.lattice.config.LatticeSettings.RepositorySettingsGroup.GithubSettingsGroup
+import com.rickbusarow.lattice.generator.DelegateProperty
 import com.rickbusarow.lattice.generator.LatticeSettingsSchema
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -31,6 +33,11 @@ public val Project.latticeSettings: LatticeSettings
 @LatticeSettingsSchema
 public interface LatticeSettings : JavaSerializable {
 
+  @DelegateProperty("GROUP")
+  public val group: Provider<String>
+
+  @DelegateProperty("VERSION_NAME")
+  public val versionName: Provider<String>
   public val versions: VersionsGroup
 
   public interface VersionsGroup : JavaSerializable {
@@ -71,7 +78,6 @@ public interface LatticeSettings : JavaSerializable {
     public interface GithubSettingsGroup : JavaSerializable {
       public val owner: Provider<String>
       public val repo: Provider<String>
-      public val url: Provider<String>
     }
   }
 
@@ -82,44 +88,72 @@ public interface LatticeSettings : JavaSerializable {
     public val pom: PomSettingsGroup
 
     public interface PomSettingsGroup : JavaSerializable {
-      public val artifactId: Provider<String>
-      public val name: Provider<String>
-      public val description: Provider<String>
-      public val inceptionYear: Provider<String>
-      public val url: Provider<String>
 
+      @DelegateProperty("POM_ARTIFACT_ID")
+      public val artifactId: Provider<String>
+
+      @DelegateProperty("POM_NAME")
+      public val name: Provider<String>
+
+      @DelegateProperty("POM_DESCRIPTION")
+      public val description: Provider<String>
+
+      @DelegateProperty("POM_INCEPTION_YEAR")
+      public val inceptionYear: Provider<String>
+
+      @DelegateProperty("POM_URL")
+      public val url: Provider<String>
       public val license: LicenseSettingsGroup
 
       public interface LicenseSettingsGroup : JavaSerializable {
+        @DelegateProperty("POM_LICENSE_NAME")
         public val name: Provider<String>
+
+        @DelegateProperty("POM_LICENSE_URL")
         public val url: Provider<String>
+
+        @DelegateProperty("POM_LICENSE_DIST")
         public val dist: Provider<String>
       }
 
       public val scm: ScmSettingsGroup
 
       public interface ScmSettingsGroup : JavaSerializable {
+
+        @DelegateProperty("POM_SCM_URL")
         public val url: Provider<String>
+
+        @DelegateProperty("POM_SCM_CONNECTION")
         public val connection: Provider<String>
+
+        @DelegateProperty("POM_SCM_DEV_CONNECTION")
         public val devConnection: Provider<String>
       }
 
       public val developer: DeveloperSettingsGroup
 
       public interface DeveloperSettingsGroup : JavaSerializable {
+        @DelegateProperty("POM_DEVELOPER_ID")
         public val id: Provider<String>
+
+        @DelegateProperty("POM_DEVELOPER_NAME")
         public val name: Provider<String>
+
+        @DelegateProperty("POM_DEVELOPER_URL")
         public val url: Provider<String>
       }
     }
   }
 }
 
-public fun JavaSettingsGroup.jvmTargetInt(): Provider<Int> =
-  jvmTarget.map { it.substringAfterLast('.').toInt() }
+public val GithubSettingsGroup.url: Provider<String>
+  get() = owner.zip(repo) { owner, repo -> "https://github.com/$owner/$repo" }
 
-public fun JavaSettingsGroup.jvmSourceInt(): Provider<Int> =
-  jvmSource.map { it.substringAfterLast('.').toInt() }
+public val JavaSettingsGroup.jvmTargetInt: Provider<Int>
+  get() = jvmTarget.map { it.substringAfterLast('.').toInt() }
 
-public fun JavaSettingsGroup.jvmToolchainInt(): Provider<Int> =
-  jvmToolchain.map { it.substringAfterLast('.').toInt() }
+public val JavaSettingsGroup.jvmSourceInt: Provider<Int>
+  get() = jvmSource.map { it.substringAfterLast('.').toInt() }
+
+public val JavaSettingsGroup.jvmToolchainInt: Provider<Int>
+  get() = jvmToolchain.map { it.substringAfterLast('.').toInt() }

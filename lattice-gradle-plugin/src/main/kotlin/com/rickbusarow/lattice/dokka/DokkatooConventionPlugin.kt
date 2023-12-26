@@ -28,7 +28,6 @@ import com.rickbusarow.lattice.conventions.HasJavaSubExtension
 import com.rickbusarow.lattice.conventions.HasKotlinSubExtension
 import com.rickbusarow.lattice.core.DefaultLatticeJavadocJarTask
 import com.rickbusarow.lattice.core.SEMVER_REGEX
-import com.rickbusarow.lattice.core.latticeSettings
 import com.rickbusarow.lattice.latticeExtension
 import dev.adamko.dokkatoo.DokkatooExtension
 import dev.adamko.dokkatoo.dokka.plugins.DokkaVersioningPluginParameters
@@ -85,11 +84,6 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
             sourceSet.includes.from(readmeFile)
           }
         }
-
-        println("################## sourceset -- ${sourceSet.name}")
-        println("%%%%%%%%%%%%%%%")
-        println(target.latticeSettings)
-        println("%%%%%%%%%%%%%%%")
 
         sourceSet.sourceLink { sourceLinkBuilder ->
 

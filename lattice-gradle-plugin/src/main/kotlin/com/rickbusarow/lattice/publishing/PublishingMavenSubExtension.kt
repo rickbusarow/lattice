@@ -21,6 +21,7 @@ import com.rickbusarow.kgx.names.SourceSetName.Companion.addSuffix
 import com.rickbusarow.kgx.names.SourceSetName.Companion.asSourceSetName
 import com.rickbusarow.kgx.names.SourceSetName.Companion.isMain
 import com.rickbusarow.kgx.newInstance
+import com.rickbusarow.lattice.config.latticeSettings
 import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
 import com.rickbusarow.lattice.conventions.AbstractSubExtension
 import com.rickbusarow.lattice.core.SubExtension
@@ -149,10 +150,11 @@ public abstract class DefaultPublishingMavenSubExtension @Inject constructor(
           ?: latticeSettings.publishing.pom.artifactId.orNull
           ?: target.name
         publication.groupId = groupId
-          ?: latticeSettings.GROUP.orNull
+          ?: target.latticeSettings.group.orNull
           ?: target.group.toString()
         publication.version = versionName
-          ?: latticeSettings.VERSION_NAME.orNull
+          ?: target.latticeSettings.versionName.orNull
+          // ?: target.VERSION_NAME.orNull
           ?: target.version.toString()
 
         val jarTask = target.tasks.named(jt, Jar::class.java)

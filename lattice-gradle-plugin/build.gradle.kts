@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-
 @file:Suppress("VariableNaming")
 
+import com.rickbusarow.kgx.extras
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode.Strict
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.rickbusarow.kgx.extras
 
 buildscript {
   dependencies {
@@ -26,18 +25,16 @@ buildscript {
   }
 }
 
-
 plugins {
   `java-gradle-plugin`
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ksp)
   alias(libs.plugins.poko)
+  alias(libs.plugins.plugin.publish)
+  alias(libs.plugins.vanniktech.publish) apply false
+  alias(libs.plugins.buildconfig)
   idea
-}
-
-if (rootProject.name == "lattice") {
-  apply(plugin = "com.rickbusarow.lattice.jvm-module")
 }
 
 buildConfig {
@@ -131,10 +128,11 @@ dependencies {
   implementation(libs.rickBusarow.moduleCheck.gradle.plugin) {
     exclude(group = "org.jetbrains.kotlin")
   }
-
   implementation(libs.vanniktech.publish)
   implementation(libs.vanniktech.publish.nexus)
+
   ksp(project(":lattice-settings-generator"))
+
   testImplementation(libs.junit.engine)
   testImplementation(libs.junit.jupiter)
   testImplementation(libs.junit.jupiter.api)
@@ -145,10 +143,10 @@ dependencies {
   testImplementation(libs.kotest.assertions.shared)
 }
 
-val GITHUB_OWNER: String by project
-val DEVELOPER_URL: String by project
-val DEVELOPER_NAME: String by project
-val GITHUB_OWNER_REPO: String by project
+// val GITHUB_OWNER: String by project
+// val DEVELOPER_URL: String by project
+// val DEVELOPER_NAME: String by project
+// val GITHUB_OWNER_REPO: String by project
 
 fun PluginDeclaration.tags(vararg v: String) {
   @Suppress("UnstableApiUsage")
@@ -193,11 +191,11 @@ if (rootProject.name == "lattice") {
 
   gradlePlugin {
 
-    val GITHUB_REPOSITORY: String by project
+    val gitHubUrl: String = project.property("lattice.publishing.pom.url") as String
     @Suppress("UnstableApiUsage")
-    vcsUrl.set(GITHUB_REPOSITORY)
+    vcsUrl.set(gitHubUrl)
     @Suppress("UnstableApiUsage")
-    website.set(GITHUB_REPOSITORY)
+    website.set(gitHubUrl)
   }
 
   fun MavenPublication.isPluginMarker(): Boolean = name.endsWith("PluginMarkerMaven")

@@ -15,6 +15,8 @@
 
 package com.rickbusarow.lattice.generator
 
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -123,9 +125,42 @@ class LatticeSettingsProcessor(
 
         addType(parseClass(groupClass, parentNames + group.simpleName.asString()))
       }
+      .addToString(groups, values, parentNames)
       .build()
   }
 
+  private fun TypeSpec.Builder.addToString(
+    groups: List<KSPropertyDeclaration>,
+    values: List<KSPropertyDeclaration>,
+    parentNames: List<String>
+  ) = apply {
+    addFunction(
+      FunSpec.builder("toString")
+        .addModifiers(KModifier.OVERRIDE)
+        .returns(String::class)
+        .addCode(
+          buildCodeBlock {
+            beginControlFlow("return buildString")
+
+            for (v in values) {
+              val simpleName = v.simpleName.asString()
+              val qualifiedPropertyName = parentNames.joinToString(".", postfix = ".$simpleName")
+              addStatement("appendLine(%P)", "$qualifiedPropertyName=\${$simpleName.orNull}")
+            }
+
+            for (g in groups) {
+              addStatement("appendLine()")
+              addStatement("appendLine(%L)", g.simpleName.asString())
+            }
+
+            endControlFlow()
+          }
+        )
+        .build()
+    )
+  }
+
+  @OptIn(KspExperimental::class)
   private fun TypeSpec.Builder.addValueProperty(
     value: KSPropertyDeclaration,
     parentNames: List<String>
@@ -149,10 +184,19 @@ class LatticeSettingsProcessor(
         .maybeAddKdoc(docString)
         .initializer(
           buildCodeBlock {
-            add("providers\n")
-            add(".gradleProperty(%S)", qualifiedPropertyName)
 
-            when (valueType.typeArguments.singleOrNull()) {
+            val propertyType = valueType.typeArguments.single()
+
+            add("providers\n.gradleProperty(%S)", qualifiedPropertyName)
+
+            val delegateName = value.getAnnotationsByType(DelegateProperty::class)
+              .flatMap { it.names.asSequence() }
+
+            for (dn in delegateName) {
+              add("\n.orElse(providers.gradleProperty(%S))", dn)
+            }
+
+            when (propertyType) {
               names.boolean -> add("\n.map { it.toBoolean() }")
               names.int -> add("\n.map { it.toInt() }")
               else -> Unit

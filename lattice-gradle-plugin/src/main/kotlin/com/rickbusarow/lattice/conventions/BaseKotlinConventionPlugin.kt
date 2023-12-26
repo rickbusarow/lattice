@@ -17,7 +17,6 @@ package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.kgx.javaExtension
 import com.rickbusarow.lattice.config.latticeSettings
-import com.rickbusarow.lattice.core.JDK_INT
 import com.rickbusarow.lattice.core.JVM_TARGET
 import com.rickbusarow.lattice.core.JVM_TARGET_INT
 import com.rickbusarow.lattice.core.JVM_TOOLCHAIN_INT

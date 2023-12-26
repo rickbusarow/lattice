@@ -17,11 +17,11 @@ package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.kgx.gradleLazy
 import com.rickbusarow.kgx.newInstanceLazy
+import com.rickbusarow.lattice.config.LatticeSettings
+import com.rickbusarow.lattice.config.latticeSettings
 import com.rickbusarow.lattice.core.HasObjectFactory
-import com.rickbusarow.lattice.core.LatticeSettings
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
-import com.rickbusarow.lattice.core.latticeSettings
 import dev.drewhamilton.poko.Poko
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory

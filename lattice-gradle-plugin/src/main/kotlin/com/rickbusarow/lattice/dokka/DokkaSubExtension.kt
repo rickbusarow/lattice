@@ -16,11 +16,11 @@
 package com.rickbusarow.lattice.dokka
 
 import com.rickbusarow.kgx.property
+import com.rickbusarow.lattice.config.latticeSettings
 import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
 import com.rickbusarow.lattice.conventions.AbstractSubExtension
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
-import com.rickbusarow.lattice.core.latticeSettings
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
