@@ -52,7 +52,10 @@ output-reports:
 
 comments:
   active: true
-  excludes: ["**/build-logic/**", "**/*.gradle.kts"]
+  excludes:
+    - "**/*.gradle.kts"
+    - "**/build-logic/**"
+    - "**/lattice-settings-generator/**"
   AbsentOrWrongFileLicense:
     active: true
     licenseTemplateFile: "license.template"

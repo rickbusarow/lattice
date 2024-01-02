@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ import io.kotest.matchers.collections.shouldContainAll
 import org.junit.jupiter.api.TestFactory
 import java.io.File
 
-class LatticeSettingsTest : LatticeGradleTest<GradleTestVersions> {
+class LatticePropertiesTest : LatticeGradleTest<GradleTestVersions> {
 
   override val kases: List<GradleTestVersions>
     get() = versionMatrix.versions(GradleTestVersions).takeLast(1)
@@ -33,13 +33,13 @@ class LatticeSettingsTest : LatticeGradleTest<GradleTestVersions> {
 
       buildFile(
         """
-        import com.rickbusarow.lattice.config.latticeSettings
+        import com.rickbusarow.lattice.config.latticeProperties
 
         plugins {
           id("com.rickbusarow.lattice.root")
         }
 
-        val ls = latticeSettings
+        val ls = latticeProperties
 
         val printSettings by tasks.registering {
           doLast {

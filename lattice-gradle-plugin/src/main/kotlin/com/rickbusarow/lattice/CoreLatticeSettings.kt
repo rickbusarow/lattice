@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,25 +15,25 @@
 
 package com.rickbusarow.lattice
 
-import com.rickbusarow.lattice.config.latticeSettings
+import com.rickbusarow.lattice.config.latticeProperties
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import javax.inject.Inject
 
-public interface CoreLatticeSettings {
+public interface CoreLatticeProperties {
   public val group: Property<String>
   public val versionName: Property<String>
 }
 
-public open class DefaultCoreLatticeSettings @Inject constructor(
+public open class DefaultCoreLatticeProperties @Inject constructor(
   target: Project,
   objects: ObjectFactory
-) : CoreLatticeSettings {
+) : CoreLatticeProperties {
 
   override val group: Property<String> = objects.property(String::class.java)
-    .convention(target.latticeSettings.group)
+    .convention(target.latticeProperties.group)
 
   override val versionName: Property<String> = objects.property(String::class.java)
-    .convention(target.latticeSettings.versionName)
+    .convention(target.latticeProperties.versionName)
 }

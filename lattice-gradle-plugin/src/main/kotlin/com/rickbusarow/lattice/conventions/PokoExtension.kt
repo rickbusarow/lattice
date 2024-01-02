@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,11 +15,12 @@
 
 package com.rickbusarow.lattice.conventions
 
-import com.rickbusarow.kgx.library
-import com.rickbusarow.kgx.libsCatalog
-import com.rickbusarow.kgx.pluginId
+import com.rickbusarow.kgx.javaExtension
+import com.rickbusarow.lattice.config.latticeProperties
+import com.rickbusarow.lattice.deps.Modules
+import com.rickbusarow.lattice.deps.PluginIds
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ModuleVersionSelector
+import org.gradle.api.artifacts.ExternalModuleDependency
 
 public interface HasCodeGenExtension {
   public val codeGen: CodeGenSubExtension
@@ -39,25 +40,27 @@ public interface PokoExtension {
   public fun Project.poko() {
 
     val implementation = configurations.getByName("implementation")
-    val testCompileOnly = configurations.getByName("testCompileOnly")
 
-    val pokoAnnotationsProvider = project.libsCatalog.library("poko-annotations")
-    val pokoAnnotations = pokoAnnotationsProvider.get()
-    val pokoAnnotationsModule = pokoAnnotations.module
-
-    implementation.withDependencies { deps ->
-      deps.removeIf {
-        pokoAnnotationsModule == (it as? ModuleVersionSelector)?.module
-      }
+    val annotationsProvider = latticeProperties.versions.poko.map {
+      dependencies.create("${Modules.`drewHamilton-poko-annotations`}:$it")
+        as ExternalModuleDependency
     }
 
-    val compileOnly = configurations.getByName("compileOnly")
+    project.buildscript.dependencies.addProvider("classpath", annotationsProvider)
+
+    val (annotationsGroup, annotationsName) =
+      Modules.`drewHamilton-poko-annotations`.split(':')
 
     // Poko adds its annotation artifact as 'implementation', which is unnecessary.
     // Replace it with a 'compileOnly' dependency.
-    compileOnly.dependencies.addLater(pokoAnnotationsProvider)
-    testCompileOnly.dependencies.addLater(pokoAnnotationsProvider)
+    implementation.exclude(mapOf("group" to annotationsGroup, "module" to annotationsName))
 
-    pluginManager.apply(libsCatalog.pluginId("poko"))
+    javaExtension.sourceSets.configureEach { sourceSet ->
+      val compileOnly = configurations.getByName(sourceSet.compileOnlyConfigurationName)
+
+      compileOnly.dependencies.addLater(annotationsProvider)
+    }
+
+    pluginManager.apply(PluginIds.`drewHamilton-poko`)
   }
 }

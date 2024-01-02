@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import com.rickbusarow.kgx.buildDir
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 buildscript {
@@ -22,13 +23,13 @@ buildscript {
 }
 
 plugins {
-  alias(libs.plugins.poko) apply false
+  alias(libs.plugins.drewHamilton.poko) apply false
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.serialization) apply false
-  alias(libs.plugins.ktlint) apply false
-  alias(libs.plugins.doks)
-  alias(libs.plugins.vanniktech.publish) apply false
-  alias(libs.plugins.moduleCheck)
+  alias(libs.plugins.rickBusarow.ktlint) apply false
+  alias(libs.plugins.rickBusarow.doks)
+  alias(libs.plugins.vanniktech.publish.base) apply false
+  alias(libs.plugins.rickBusarow.moduleCheck)
   id("com.rickbusarow.lattice.kotlin-jvm") apply false
   id("com.rickbusarow.lattice.root")
 }
@@ -47,6 +48,10 @@ lattice {
   }
   java {
   }
+  tasks.addTasksToIdeSync(
+    ":lattice-gradle-plugin:generateBuildConfig",
+    ":lattice-gradle-plugin:kspKotlin"
+  )
 }
 
 if (gradle.includedBuilds.any { it.name == "build-logic" }) {
@@ -56,7 +61,7 @@ if (gradle.includedBuilds.any { it.name == "build-logic" }) {
 
     sub.plugins.withId("build-init") {
 
-      val ktlintPluginId = libs.plugins.ktlint.get().pluginId
+      val ktlintPluginId = libs.plugins.rickBusarow.ktlint.get().pluginId
 
       sub.apply(plugin = ktlintPluginId)
 
@@ -66,6 +71,10 @@ if (gradle.includedBuilds.any { it.name == "build-logic" }) {
     }
 
     sub.layout.buildDirectory.set(sub.file("build/build-main"))
+
+    sub.tasks.withType(Test::class).configureEach {
+      systemProperty("kase.baseWorkingDir", buildDir().resolve("kase"))
+    }
 
     sub.apply(plugin = "idea")
 

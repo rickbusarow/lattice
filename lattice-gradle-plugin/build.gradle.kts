@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,10 @@
 @file:Suppress("VariableNaming")
 
 import com.rickbusarow.kgx.extras
+import com.rickbusarow.kgx.library
+import com.rickbusarow.kgx.libsCatalog
+import com.rickbusarow.kgx.pluginId
+import com.rickbusarow.kgx.version
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode.Strict
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -30,9 +34,9 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ksp)
-  alias(libs.plugins.poko)
+  alias(libs.plugins.drewHamilton.poko)
   alias(libs.plugins.plugin.publish)
-  alias(libs.plugins.vanniktech.publish) apply false
+  alias(libs.plugins.vanniktech.publish.base) apply false
   alias(libs.plugins.buildconfig)
   idea
 }
@@ -43,7 +47,30 @@ buildConfig {
     internalVisibility = true
   }
 
-  buildConfigField("String", "pokoVersion", "\"${libs.versions.poko.get()}\"")
+  forClass("com.rickbusarow.lattice.deps", "Versions") {
+
+    for (alias in libsCatalog.versionAliases) {
+      buildConfigField(alias.replace('.', '-'), libsCatalog.version(alias))
+    }
+  }
+  forClass("com.rickbusarow.lattice.deps", "PluginIds") {
+
+    for (alias in libsCatalog.pluginAliases) {
+      buildConfigField(alias.replace('.', '-'), libsCatalog.pluginId(alias))
+    }
+  }
+  forClass("com.rickbusarow.lattice.deps", "Libs") {
+
+    for (alias in libsCatalog.libraryAliases) {
+      buildConfigField(alias.replace('.', '-'), libsCatalog.library(alias).get().toString())
+    }
+  }
+  forClass("com.rickbusarow.lattice.deps", "Modules") {
+
+    for (alias in libsCatalog.libraryAliases) {
+      buildConfigField(alias.replace('.', '-'), libsCatalog.library(alias).get().module.toString())
+    }
+  }
 }
 
 val gradleTest by sourceSets.registering {
@@ -105,12 +132,14 @@ dependencies {
   gradleTestImplementation(libs.kotest.assertions.shared)
 
   implementation(libs.benManes.versions)
+  implementation(libs.breadmoirai.github.release)
   implementation(libs.detekt.gradle)
   implementation(libs.diffplug.spotless)
   implementation(libs.dokka.core)
   implementation(libs.dokka.gradle)
   implementation(libs.dokka.versioning)
   implementation(libs.dokkatoo.plugin)
+  implementation(libs.drewHamilton.poko.gradle.plugin)
   implementation(libs.dropbox.dependencyGuard)
   implementation(libs.ec4j.core)
   implementation(libs.johnrengelman.shadowJar)
@@ -120,9 +149,7 @@ dependencies {
   implementation(libs.kotlinx.binaryCompatibility)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.picnic)
-  implementation(libs.poko.gradle.plugin)
   implementation(libs.rickBusarow.doks)
-  implementation(libs.rickBusarow.github.release)
   implementation(libs.rickBusarow.kgx)
   implementation(libs.rickBusarow.ktlint)
   implementation(libs.rickBusarow.moduleCheck.gradle.plugin) {
@@ -187,7 +214,7 @@ gradlePlugin {
 if (rootProject.name == "lattice") {
 
   apply(plugin = "com.rickbusarow.lattice.java-gradle-plugin")
-  apply(plugin = libs.plugins.vanniktech.publish.get().pluginId)
+  apply(plugin = libs.plugins.vanniktech.publish.base.get().pluginId)
 
   gradlePlugin {
 

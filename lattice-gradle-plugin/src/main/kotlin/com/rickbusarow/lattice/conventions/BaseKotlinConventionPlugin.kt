@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,9 @@
 package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.kgx.javaExtension
-import com.rickbusarow.lattice.config.latticeSettings
-import com.rickbusarow.lattice.core.JVM_TARGET
-import com.rickbusarow.lattice.core.JVM_TARGET_INT
-import com.rickbusarow.lattice.core.JVM_TOOLCHAIN_INT
-import com.rickbusarow.lattice.core.KOTLIN_API
+import com.rickbusarow.lattice.config.jvmTargetInt
+import com.rickbusarow.lattice.config.jvmToolchainInt
+import com.rickbusarow.lattice.config.latticeProperties
 import com.rickbusarow.lattice.latticeExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -56,7 +54,7 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
     val extension = (target.latticeExtension as HasKotlinSubExtension).kotlin
 
     val jetbrainsExtension = target.kotlinExtension
-    jetbrainsExtension.jvmToolchain(target.JVM_TOOLCHAIN_INT)
+    jetbrainsExtension.jvmToolchain(target.latticeProperties.java.jvmToolchainInt.get())
 
     configureKotlinOptions(target, extension)
 
@@ -72,10 +70,12 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
 
     target.plugins.withId("java") {
       target.tasks.withType(JavaCompile::class.java).configureEach { task ->
-        task.options.release.set(target.JVM_TARGET_INT)
+        task.options.release.set(target.latticeProperties.java.jvmTargetInt.get())
       }
 
-      target.javaExtension.sourceCompatibility = JavaVersion.toVersion(target.JVM_TARGET)
+      target.javaExtension.sourceCompatibility = JavaVersion.toVersion(
+        target.latticeProperties.java.jvmTarget.get()
+      )
 
       // fixes the error
       // 'Entry classpath.index is a duplicate but no duplicate handling strategy has been set.'
@@ -90,7 +90,7 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
   private fun configureKotlinOptions(target: Project, extension: KotlinSubExtension) {
 
     target.tasks.withType(KotlinJvmCompile::class.java).configureEach { task ->
-      task.kotlinOptions.jvmTarget = target.JVM_TARGET
+      task.kotlinOptions.jvmTarget = target.latticeProperties.java.jvmTarget.get()
     }
     target.tasks.withType(KotlinCompileDsl::class.java).configureEach { task ->
 
@@ -98,18 +98,18 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
 
         options.allWarningsAsErrors.set(extension.allWarningsAsErrors.orElse(false))
 
-        val kotlinMajor = target.KOTLIN_API
+        val kotlinMajor = target.latticeProperties.kotlin.apiLevel.get()
         languageVersion = kotlinMajor
         apiVersion = kotlinMajor
 
-        (this as? KotlinJvmOptions)?.jvmTarget = target.JVM_TARGET
+        (this as? KotlinJvmOptions)?.jvmTarget = target.latticeProperties.java.jvmTarget.get()
 
         @Suppress("SpellCheckingInspection")
         freeCompilerArgs += buildList {
           add("-Xinline-classes")
           add("-Xcontext-receivers")
 
-          val explicitApiEnabled = target.latticeSettings.kotlin.explicitApi.orNull == true
+          val explicitApiEnabled = target.latticeProperties.kotlin.explicitApi.orNull == true
           if (explicitApiEnabled) {
             add("-Xexplicit-api=strict")
           }

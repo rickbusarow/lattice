@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 plugins {
   alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.ksp)
 }
 
 if (rootProject.name == "lattice") {
@@ -22,9 +23,13 @@ if (rootProject.name == "lattice") {
 }
 
 dependencies {
+  compileOnly(libs.google.auto.service.annotations)
+
   implementation(libs.ksp.api)
   implementation(libs.square.kotlinPoet)
   implementation(libs.square.kotlinPoet.ksp)
 
   implementation(project(":lattice-settings-annotations"))
+
+  ksp(libs.zacSweers.auto.service.ksp)
 }

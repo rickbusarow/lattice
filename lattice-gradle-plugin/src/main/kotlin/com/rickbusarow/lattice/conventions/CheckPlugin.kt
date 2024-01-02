@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,7 @@ import com.rickbusarow.kgx.applyOnce
 import com.rickbusarow.lattice.core.CheckTask
 import com.rickbusarow.lattice.core.DefaultLatticeTask
 import com.rickbusarow.lattice.core.FixTask
-import com.rickbusarow.lattice.core.PluginIds
+import com.rickbusarow.lattice.deps.PluginIds
 import kotlinx.validation.KotlinApiBuildTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -40,13 +40,13 @@ public abstract class CheckPlugin : Plugin<Project> {
       task.dependsOn(target.rootProject.tasks.named("spotlessApply"))
       task.dependsOn(target.tasks.withType(KotlinApiBuildTask::class.java))
 
-      if (target.plugins.hasPlugin(PluginIds.dropbox.dependency.guard)) {
+      if (target.plugins.hasPlugin(PluginIds.`dropbox-dependency-guard`)) {
         task.dependsOn(target.tasks.named("dependencyGuardBaseline"))
       }
 
       task.dependsOn(target.tasks.named("deleteEmptyDirs"))
 
-      if (target.plugins.hasPlugin(PluginIds.rickBusarow.moduleCheck)) {
+      if (target.plugins.hasPlugin(PluginIds.`rickBusarow-moduleCheck`)) {
         task.dependsOn(target.tasks.named("moduleCheckAuto"))
       }
       task.dependsOn(target.tasks.named("ktlintFormat"))

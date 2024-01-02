@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,18 +19,20 @@ import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
-import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.rickbusarow.lattice.generator.utils.addAnnotation
+import com.rickbusarow.lattice.generator.utils.applyEach
+import com.rickbusarow.lattice.generator.utils.hasSuperType
+import com.rickbusarow.lattice.generator.utils.maybeAddKdoc
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.buildCodeBlock
@@ -38,32 +40,32 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 
 /** */
-class LatticeSettingsProcessor(
+class LatticePropertiesProcessor(
   environment: SymbolProcessorEnvironment
 ) : LatticeSymbolProcessor(environment) {
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
 
-    resolver.getSymbolsWithAnnotation(LatticeSettingsSchema::class.qualifiedName!!)
+    resolver.getSymbolsWithAnnotation(LatticePropertiesSchema::class.qualifiedName!!)
       .forEach { symbol ->
 
-        val latticeSettings = parseClass(symbol as KSClassDeclaration, listOf("lattice"))
+        val latticeProperties = parseClass(symbol as KSClassDeclaration, listOf())
 
-        val defaultCN = symbol.toClassName().default()
+        val implClassName = symbol.toClassName().impl()
 
-        val fs = FileSpec.builder(defaultCN)
+        val fileSpec = FileSpec.builder(implClassName)
           .addGeneratedBy()
-          .addType(latticeSettings)
+          .addType(latticeProperties)
           .addAnnotation(Suppress::class, "AbsentOrWrongFileLicense")
           .build()
 
         codeGenerator.createNewFile(
           dependencies = Dependencies(false, symbol.containingFile!!),
-          packageName = defaultCN.packageName,
-          fileName = defaultCN.simpleName
+          packageName = implClassName.packageName,
+          fileName = implClassName.simpleName
         ).bufferedWriter().use { writer ->
 
-          fs.toString()
+          fileSpec.toString()
             .replace("`internal`", "internal")
             .let(writer::write)
         }
@@ -89,17 +91,18 @@ class LatticeSettingsProcessor(
       .partition { it.type.toTypeName().toString() in groupTypes }
 
     val clazzCN = clazz.toClassName()
-    val defaultName = clazzCN.default()
+    val implCN = clazzCN.impl()
 
     val builder = when {
-      parentNames.size == 1 -> createTopLevelBuilder(
-        defaultClassName = defaultName,
+      parentNames.isEmpty() -> createTopLevelBuilder(
+        implClassName = implCN,
+        defaultsClassName = clazzCN.defaults(),
         docString = clazz.docString,
         interfaceClassName = clazzCN
       )
 
       else -> createNestedBuilder(
-        defaultClassName = defaultName,
+        implClassName = implCN,
         docString = clazz.docString,
         interfaceClassName = clazzCN
       )
@@ -115,11 +118,11 @@ class LatticeSettingsProcessor(
         val groupCNString = groupCN.toString()
         val groupClass = groupsByFqn.getValue(groupCNString)
 
-        val groupDefaultCN = groupCN.default()
+        val groupImplCN = groupCN.impl()
 
         addGroupProperty(
           groupPropertyName = group.simpleName.asString(),
-          groupDefaultCN = groupDefaultCN,
+          groupImplCN = groupImplCN,
           docString = group.docString
         )
 
@@ -168,8 +171,6 @@ class LatticeSettingsProcessor(
     val simpleName = value.simpleName.asString()
     val valueType = value.type.toTypeName() as ParameterizedTypeName
 
-    val qualifiedPropertyName = parentNames.joinToString(".", postfix = ".$simpleName")
-
     val docString = value.docString?.trimIndent()
 
     // validateValuePropertyKdoc(
@@ -180,12 +181,20 @@ class LatticeSettingsProcessor(
     // )
 
     addProperty(
-      PropertySpec.builder(simpleName, valueType, OVERRIDE)
+      PropertySpec.builder(simpleName, valueType, KModifier.OVERRIDE)
         .maybeAddKdoc(docString)
         .initializer(
           buildCodeBlock {
 
             val propertyType = valueType.typeArguments.single()
+
+            // ex: `lattice.kotlin.allWarningsAsErrors`
+            val qualifiedPropertyName = listOf(
+              "lattice",
+              *parentNames.toTypedArray(),
+              simpleName
+            )
+              .joinToString(separator = ".")
 
             add("providers\n.gradleProperty(%S)", qualifiedPropertyName)
 
@@ -197,10 +206,21 @@ class LatticeSettingsProcessor(
             }
 
             when (propertyType) {
+              names.list.parameterizedBy(names.string) -> add("\n.map { it.split(',', ' ') }")
               names.boolean -> add("\n.map { it.toBoolean() }")
               names.int -> add("\n.map { it.toInt() }")
               else -> Unit
             }
+
+            // ex: `defaults.kotlin.allWarningsAsErrors`
+            val defaultName = listOf(
+              "defaults",
+              *parentNames.toTypedArray(),
+              simpleName
+            )
+              .joinToString(separator = ".")
+
+            add("\n.orElse(%L)", defaultName)
           }
         )
         .build()
@@ -209,66 +229,67 @@ class LatticeSettingsProcessor(
 
   private fun TypeSpec.Builder.addGroupProperty(
     groupPropertyName: String,
-    groupDefaultCN: ClassName,
+    groupImplCN: ClassName,
     docString: String?
   ) = addProperty(
-    PropertySpec.builder(groupPropertyName, groupDefaultCN, OVERRIDE)
+    PropertySpec.builder(groupPropertyName, groupImplCN, KModifier.OVERRIDE)
       .maybeAddKdoc(docString)
-      .initializer("%T()", groupDefaultCN)
+      .initializer("%T()", groupImplCN)
       .build()
   )
 
   private fun createTopLevelBuilder(
-    defaultClassName: ClassName,
+    implClassName: ClassName,
+    defaultsClassName: ClassName,
     docString: String?,
     interfaceClassName: ClassName
   ): TypeSpec.Builder {
 
-    return TypeSpec.classBuilder(defaultClassName)
-      .addModifiers(KModifier.OPEN)
+    val target = "target"
+    val providers = "providers"
+    return TypeSpec.classBuilder(implClassName)
+      .addModifiers(KModifier.OPEN, KModifier.INTERNAL)
       .maybeAddKdoc(docString)
       .addSuperinterface(interfaceClassName)
       .primaryConstructor(
         FunSpec.constructorBuilder()
           .addAnnotation(names.javaxInject)
-          .addParameter("providers", names.gradleProviderFactory)
-          .addParameter("target", names.gradleProject)
+          .addParameter(providers, names.gradleProviderFactory)
+          .addParameter(target, names.gradleProject)
           .build()
       )
       .addProperty(
-        PropertySpec.builder("providers", names.gradleProviderFactory)
-          .initializer("providers")
+        PropertySpec.builder(providers, names.gradleProviderFactory)
+          .initializer(providers)
           .addModifiers(KModifier.PRIVATE)
           .build()
       )
       .addProperty(
-        PropertySpec.builder("target", names.gradleProject)
-          .initializer("target")
+        PropertySpec.builder("defaults", defaultsClassName)
+          .initializer("%T(target = %L)", defaultsClassName, target)
           .addModifiers(KModifier.PRIVATE)
           .build()
       )
   }
 
   private fun createNestedBuilder(
-    defaultClassName: ClassName,
+    implClassName: ClassName,
     docString: String?,
     interfaceClassName: ClassName
   ): TypeSpec.Builder {
-    return TypeSpec.classBuilder(defaultClassName)
-      .addModifiers(KModifier.INNER)
+    return TypeSpec.classBuilder(implClassName)
+      .addModifiers(KModifier.INNER, KModifier.INTERNAL)
       .maybeAddKdoc(docString)
       .addSuperinterface(interfaceClassName)
   }
 
-  private fun ClassName.default() = ClassName(
+  private fun ClassName.impl() = ClassName(
     "$packageName.internal",
-    simpleNames.map { "Default$it" }
+    simpleNames.map { "${it}Impl" }
   )
-}
 
-/** */
-class LatticeSettingsProcessorProvider : SymbolProcessorProvider {
-  override fun create(
-    environment: SymbolProcessorEnvironment
-  ): SymbolProcessor = LatticeSettingsProcessor(environment)
+  private fun ClassName.defaults() = ClassName(
+    "$packageName.internal",
+    simpleNames.map { "${it}Defaults" }
+  )
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 package com.rickbusarow.lattice.dokka
 
 import com.rickbusarow.kgx.property
-import com.rickbusarow.lattice.config.latticeSettings
+import com.rickbusarow.lattice.config.latticeProperties
 import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
 import com.rickbusarow.lattice.conventions.AbstractSubExtension
 import com.rickbusarow.lattice.core.SubExtension
@@ -57,7 +57,7 @@ public abstract class DefaultDokkaSubExtension @Inject constructor(
   DokkaSubExtension,
   SubExtensionInternal {
 
-  override val dokkaVersion: Property<String> = property(target.latticeSettings.versions.dokka)
+  override val dokkaVersion: Property<String> = property(target.latticeProperties.versions.dokka)
   override val generateTaskWorkerMinHeapSize: Property<String> = property("512m")
   override val generateTaskWorkerMaxHeapSize: Property<String> = property("1024m")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,15 @@
 
 package com.rickbusarow.lattice.generator
 
-/** */
-@Retention(AnnotationRetention.SOURCE)
-annotation class LatticeSettingsSchema
+import com.google.auto.service.AutoService
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 /** */
-@Retention(AnnotationRetention.SOURCE)
-annotation class DelegateProperty(vararg val names: String)
+@AutoService(SymbolProcessorProvider::class)
+class LatticePropertiesProcessorProvider : SymbolProcessorProvider {
+  override fun create(
+    environment: SymbolProcessorEnvironment
+  ): SymbolProcessor = LatticePropertiesProcessor(environment)
+}

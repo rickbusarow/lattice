@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,13 +74,13 @@ public abstract class DefaultKotlinSubExtension @Inject constructor(
 ) : AbstractSubExtension(target, objects), KotlinSubExtension, SubExtensionInternal {
 
   override val apiLevel: Property<String> =
-    objects.property(convention = latticeSettings.kotlin.apiLevel)
+    objects.property(convention = latticeProperties.kotlin.apiLevel)
 
   override val allWarningsAsErrors: Property<Boolean> =
-    objects.property(latticeSettings.kotlin.allWarningsAsErrors)
+    objects.property(latticeProperties.kotlin.allWarningsAsErrors)
 
   override val explicitApi: Property<Boolean> =
-    objects.property(latticeSettings.kotlin.explicitApi)
+    objects.property(latticeProperties.kotlin.explicitApi)
 }
 
 public interface KotlinJvmSubExtension : KotlinSubExtension

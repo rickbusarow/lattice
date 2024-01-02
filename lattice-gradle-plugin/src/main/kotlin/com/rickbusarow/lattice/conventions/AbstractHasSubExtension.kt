@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,8 @@ package com.rickbusarow.lattice.conventions
 
 import com.rickbusarow.kgx.gradleLazy
 import com.rickbusarow.kgx.newInstanceLazy
-import com.rickbusarow.lattice.config.LatticeSettings
-import com.rickbusarow.lattice.config.latticeSettings
+import com.rickbusarow.lattice.config.LatticeProperties
+import com.rickbusarow.lattice.config.latticeProperties
 import com.rickbusarow.lattice.core.HasObjectFactory
 import com.rickbusarow.lattice.core.SubExtension
 import com.rickbusarow.lattice.core.SubExtensionInternal
@@ -94,7 +94,7 @@ public abstract class AbstractSubExtension @Inject constructor(
   final override val objects: ObjectFactory
 ) : SubExtensionInternal, ExtensionAware, ObjectFactory by objects {
 
-  protected val latticeSettings: LatticeSettings by gradleLazy { target.latticeSettings }
+  protected val latticeProperties: LatticeProperties by gradleLazy { target.latticeProperties }
 
   protected inline fun <reified T : SubExtension<T>> subExtension(): Lazy<T> {
     return objects.newInstanceLazy<T>()

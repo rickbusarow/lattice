@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.rickbusarow.lattice.generator
+package com.rickbusarow.lattice.generator.utils
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
@@ -24,6 +24,8 @@ internal class Names {
 
   val javaSerializable = ClassName("java.io", "Serializable")
 
+  val list by lazy(NONE) { List::class.asClassName() }
+  val set by lazy(NONE) { Set::class.asClassName() }
   val boolean by lazy(NONE) { Boolean::class.asClassName() }
   val int by lazy(NONE) { Int::class.asClassName() }
   val string by lazy(NONE) { String::class.asClassName() }
@@ -39,8 +41,7 @@ internal class Names {
     gradleProvider.parameterizedBy(boolean)
   }
   val gradleObjectFactory = ClassName("org.gradle.api", "ObjectFactory")
-  val gradleProviderFactory =
-    ClassName("org.gradle.api.provider", "ProviderFactory")
+  val gradleProviderFactory = ClassName("org.gradle.api.provider", "ProviderFactory")
   val gradleProviderInt by lazy(NONE) { gradleProvider.parameterizedBy(int) }
   val gradleSetProperty = ClassName("org.gradle.api.provider", "SetProperty")
   val javaxInject = ClassName("javax.inject", "Inject")

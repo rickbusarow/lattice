@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,7 +57,7 @@ public abstract class BaseLatticeExtension @Inject constructor(
   private val target: Project,
   private val objects: ObjectFactory
 ) : ExtensionAware,
-  CoreLatticeSettings by objects.newInstance<DefaultCoreLatticeSettings>()
+  CoreLatticeProperties by objects.newInstance<DefaultCoreLatticeProperties>()
 
 public abstract class RootExtension @Inject constructor(
   target: Project,
@@ -68,6 +68,7 @@ public abstract class RootExtension @Inject constructor(
   HasGitHubSubExtension by objects.newInstance<DefaultHasGitHubSubExtension>(),
   HasJavaSubExtension by objects.newInstance<DefaultHasJavaSubExtension>(),
   HasKotlinSubExtension by objects.newInstance<DefaultHasKotlinSubExtension>(),
+  HasTasksSubExtension by objects.newInstance<DefaultHasTasksSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KspExtension,
@@ -84,6 +85,7 @@ public abstract class GradlePluginModuleExtension @Inject constructor(
   HasKotlinJvmSubExtension by objects.newInstance<DefaultHasKotlinJvmSubExtension>(),
   HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
   PublishingGradlePluginHandler by objects.newInstance<DefaultPublishingGradlePluginHandler>(),
+  HasTasksSubExtension by objects.newInstance<DefaultHasTasksSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KspExtension,
@@ -99,6 +101,7 @@ public abstract class KotlinJvmModuleExtension @Inject constructor(
   HasJavaSubExtension by objects.newInstance<DefaultHasJavaSubExtension>(),
   HasKotlinJvmSubExtension by objects.newInstance<DefaultHasKotlinJvmSubExtension>(),
   HasPublishingMavenSubExtension by objects.newInstance<DefaultHasPublishingMavenSubExtension>(),
+  HasTasksSubExtension by objects.newInstance<DefaultHasTasksSubExtension>(),
   AutoServiceExtension,
   BuildLogicShadowExtensionHook,
   KspExtension,

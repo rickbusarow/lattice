@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,15 +57,15 @@ public abstract class DefaultJavaSubExtension @Inject constructor(
   SubExtensionInternal {
 
   final override val jvmTarget: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.java.jvmTarget)
+    .convention(latticeProperties.java.jvmTarget)
   override val jvmTargetInt: Provider<Int> = jvmTarget.map { it.substringAfterLast('.').toInt() }
 
   final override val jvmSource: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.java.jvmSource)
+    .convention(latticeProperties.java.jvmSource)
   override val jvmSourceInt: Provider<Int> = jvmSource.map { it.substringAfterLast('.').toInt() }
 
   final override val jvmToolchain: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.java.jvmToolchain)
+    .convention(latticeProperties.java.jvmToolchain)
   override val jvmToolchainInt: Provider<Int> = jvmToolchain.map {
     it.substringAfterLast('.').toInt()
   }

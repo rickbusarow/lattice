@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ import com.rickbusarow.kgx.names.SourceSetName.Companion.addSuffix
 import com.rickbusarow.kgx.names.SourceSetName.Companion.asSourceSetName
 import com.rickbusarow.kgx.names.SourceSetName.Companion.isMain
 import com.rickbusarow.kgx.newInstance
-import com.rickbusarow.lattice.config.latticeSettings
+import com.rickbusarow.lattice.config.latticeProperties
 import com.rickbusarow.lattice.conventions.AbstractHasSubExtension
 import com.rickbusarow.lattice.conventions.AbstractSubExtension
 import com.rickbusarow.lattice.core.SubExtension
@@ -79,34 +79,34 @@ public abstract class DefaultPublishingMavenSubExtension @Inject constructor(
   override val defaultPom: DefaultMavenPom by gradleLazy {
     objects.newInstance<DefaultMavenPom>()
       .also { pom ->
-        pom.url.convention(latticeSettings.publishing.pom.url)
-        pom.name.convention(latticeSettings.publishing.pom.name)
+        pom.url.convention(latticeProperties.publishing.pom.url)
+        pom.name.convention(latticeProperties.publishing.pom.name)
 
-        pom.description.convention(latticeSettings.publishing.pom.description)
-        pom.inceptionYear.convention(latticeSettings.publishing.pom.inceptionYear)
+        pom.description.convention(latticeProperties.publishing.pom.description)
+        pom.inceptionYear.convention(latticeProperties.publishing.pom.inceptionYear)
 
         pom.licenses { licenseSpec ->
           licenseSpec.license { license ->
 
-            license.name.convention(latticeSettings.publishing.pom.license.name)
-            license.url.convention(latticeSettings.publishing.pom.license.url)
-            license.distribution.convention(latticeSettings.publishing.pom.license.dist)
+            license.name.convention(latticeProperties.publishing.pom.license.name)
+            license.url.convention(latticeProperties.publishing.pom.license.url)
+            license.distribution.convention(latticeProperties.publishing.pom.license.dist)
           }
         }
 
         pom.scm { scm ->
 
-          scm.url.convention(latticeSettings.publishing.pom.scm.url)
-          scm.connection.convention(latticeSettings.publishing.pom.scm.connection)
-          scm.developerConnection.convention(latticeSettings.publishing.pom.scm.devConnection)
+          scm.url.convention(latticeProperties.publishing.pom.scm.url)
+          scm.connection.convention(latticeProperties.publishing.pom.scm.connection)
+          scm.developerConnection.convention(latticeProperties.publishing.pom.scm.devConnection)
         }
 
         pom.developers { developerSpec ->
           developerSpec.developer { developer ->
 
-            developer.id.convention(latticeSettings.publishing.pom.developer.id)
-            developer.name.convention(latticeSettings.publishing.pom.developer.name)
-            developer.url.convention(latticeSettings.publishing.pom.developer.url)
+            developer.id.convention(latticeProperties.publishing.pom.developer.id)
+            developer.name.convention(latticeProperties.publishing.pom.developer.name)
+            developer.url.convention(latticeProperties.publishing.pom.developer.url)
           }
         }
       }
@@ -147,13 +147,13 @@ public abstract class DefaultPublishingMavenSubExtension @Inject constructor(
       .publications
       .register(pubName, MavenPublication::class.java) { publication ->
         publication.artifactId = artifactId
-          ?: latticeSettings.publishing.pom.artifactId.orNull
+          ?: latticeProperties.publishing.pom.artifactId.orNull
           ?: target.name
         publication.groupId = groupId
-          ?: target.latticeSettings.group.orNull
+          ?: target.latticeProperties.group.orNull
           ?: target.group.toString()
         publication.version = versionName
-          ?: target.latticeSettings.versionName.orNull
+          ?: target.latticeProperties.versionName.orNull
           // ?: target.VERSION_NAME.orNull
           ?: target.version.toString()
 

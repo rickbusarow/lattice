@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,18 +63,18 @@ public abstract class DefaultGitHubSubExtension @Inject constructor(
   override fun getPublicType(): TypeOf<*> = typeOf(GitHubSubExtension::class.java)
 
   final override val owner: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.repository.github.owner)
+    .convention(latticeProperties.repository.github.owner)
 
   final override val repo: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.repository.github.repo)
+    .convention(latticeProperties.repository.github.repo)
 
   override val defaultBranch: Property<String> = objects.property(String::class.java)
-    .convention(latticeSettings.repository.defaultBranch)
+    .convention(latticeProperties.repository.defaultBranch)
 
-  override val url: Provider<String> = latticeSettings.repository.github.url
+  override val url: Provider<String> = latticeProperties.repository.github.url
     .orElse(owner.zip(repo) { owner, repo -> "https://github.com/$owner/$repo" })
-  override val connection: Provider<String> = latticeSettings.repository.github.url
+  override val connection: Provider<String> = latticeProperties.repository.github.url
     .orElse(owner.zip(repo) { owner, repo -> "scm:git:git://github.com/$owner/$repo.git" })
-  override val developerConnection: Provider<String> = latticeSettings.repository.github.url
+  override val developerConnection: Provider<String> = latticeProperties.repository.github.url
     .orElse(owner.zip(repo) { owner, repo -> "scm:git:ssh://github.com/$owner/$repo.git" })
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@ package com.rickbusarow.lattice.publishing
 import com.rickbusarow.kgx.registerOnce
 import com.rickbusarow.lattice.conventions.DefaultCheckTask
 import com.rickbusarow.lattice.conventions.applyBinaryCompatibility
-import com.rickbusarow.lattice.core.PluginIds
+import com.rickbusarow.lattice.deps.PluginIds
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Plugin
@@ -36,9 +36,9 @@ public abstract class LatticePublishPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
 
-    target.plugins.apply(PluginIds.vanniktech.publish.base)
+    target.plugins.apply(PluginIds.`vanniktech-publish-base`)
 
-    target.applyBinaryCompatibility()
+    target.rootProject.applyBinaryCompatibility()
 
     val maven = target.mavenPublishBaseExtension
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,6 @@ import com.rickbusarow.kgx.dependsOn
 import com.rickbusarow.kgx.extras
 import com.rickbusarow.kgx.getOrPut
 import com.rickbusarow.kgx.isRootProject
-import com.rickbusarow.kgx.library
-import com.rickbusarow.kgx.libsCatalog
 import com.rickbusarow.kgx.projectDependency
 import com.rickbusarow.ktlint.KtLintTask
 import com.rickbusarow.lattice.conventions.HasGitHubSubExtension
@@ -28,6 +26,7 @@ import com.rickbusarow.lattice.conventions.HasJavaSubExtension
 import com.rickbusarow.lattice.conventions.HasKotlinSubExtension
 import com.rickbusarow.lattice.core.DefaultLatticeJavadocJarTask
 import com.rickbusarow.lattice.core.SEMVER_REGEX
+import com.rickbusarow.lattice.deps.Libs
 import com.rickbusarow.lattice.latticeExtension
 import dev.adamko.dokkatoo.DokkatooExtension
 import dev.adamko.dokkatoo.dokka.plugins.DokkaVersioningPluginParameters
@@ -149,14 +148,8 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
 
         val pluginConfig = "dokkatooPluginHtml"
 
-        target.dependencies.add(
-          pluginConfig,
-          target.libsCatalog.library("dokka-all-modules")
-        )
-        target.dependencies.add(
-          pluginConfig,
-          target.libsCatalog.library("dokka-versioning")
-        )
+        target.dependencies.add(pluginConfig, Libs.`dokka-all-modules`)
+        target.dependencies.add(pluginConfig, Libs.`dokka-versioning`)
 
         val dokkaArchiveBuildDir = target.rootProject.layout
           .buildDirectory

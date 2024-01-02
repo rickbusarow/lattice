@@ -13,28 +13,12 @@
  * limitations under the License.
  */
 
-package com.rickbusarow.lattice.conventions
+package com.rickbusarow.lattice.generator
 
-import com.rickbusarow.lattice.deps.Libs
-import org.gradle.api.Project
+/** */
+@Retention(AnnotationRetention.SOURCE)
+annotation class LatticePropertiesSchema
 
-public interface AutoServiceExtension : KspExtension {
-
-  @Suppress("UndocumentedPublicFunction")
-  public fun Project.autoService() {
-    ksp()
-
-    dependencies.add(
-      "compileOnly",
-      Libs.`google-auto-service-annotations`
-    )
-    dependencies.add(
-      "testCompileOnly",
-      Libs.`google-auto-service-annotations`
-    )
-    dependencies.add(
-      "ksp",
-      Libs.`zacSweers-auto-service-ksp`
-    )
-  }
-}
+/** */
+@Retention(AnnotationRetention.SOURCE)
+annotation class DelegateProperty(vararg val names: String)
