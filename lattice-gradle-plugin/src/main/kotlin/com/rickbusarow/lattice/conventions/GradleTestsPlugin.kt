@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@ package com.rickbusarow.lattice.conventions
 import com.rickbusarow.kgx.applyOnce
 import com.rickbusarow.kgx.dependsOn
 import com.rickbusarow.kgx.extras
+import com.rickbusarow.kgx.isRootProject
 import com.rickbusarow.kgx.javaExtension
 import com.rickbusarow.kgx.registerOnce
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -34,6 +35,19 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugins.ide.idea.model.IdeaModel
+
+public interface GradleTestsExtension {
+
+  /**
+   * Adds a `gradleTest` source set to the project.
+   *
+   * @see GradleTestsPlugin
+   */
+  @Suppress("UndocumentedPublicFunction")
+  public fun Project.gradleTests() {
+    plugins.apply(GradleTestsPlugin::class.java)
+  }
+}
 
 /**
  * This plugin will:
@@ -52,7 +66,9 @@ public abstract class GradleTestsPlugin : Plugin<Project> {
       .register(GRADLE_TEST) { ss ->
         // Tells the `java-gradle-plugin` plugin to inject its TestKit logic
         // into the `gradleTest` source set.
-        target.gradlePluginExtension.testSourceSets(ss)
+        target.plugins.withId("java-gradle-plugin") {
+          target.gradlePluginExtension.testSourceSets(ss)
+        }
 
         val main = target.javaSourceSet(SourceSet.MAIN_SOURCE_SET_NAME)
 
@@ -97,8 +113,11 @@ public abstract class GradleTestsPlugin : Plugin<Project> {
         task.dependsOn(target.rootProject.tasks.named(PUBLISH_TO_BUILD_M2))
       }
 
-    target.plugins.withType(PublishingPlugin::class.java).configureEach {
-      setUpPublishToBuildM2(target)
+    target.rootProject.allprojects.forEach { anyProject ->
+      anyProject.plugins.withType(PublishingPlugin::class.java).configureEach {
+        setUpPublishToBuildM2(anyProject)
+      }
+      // setUpPublishToBuildM2(target)
     }
 
     // Make `check` depend upon `gradleTest`
@@ -107,9 +126,7 @@ public abstract class GradleTestsPlugin : Plugin<Project> {
     // Make the IDE treat `src/gradleTest/[java|kotlin]` as a test source directory.
     target.extensions.configure(IdeaModel::class.java) { idea ->
       idea.module { module ->
-        module.testSources.from(
-          gradleTestSourceSet.map { it.allSource.srcDirs }
-        )
+        module.testSources.from(gradleTestSourceSet.map { it.allSource.srcDirs })
       }
     }
   }
@@ -149,7 +166,9 @@ public abstract class GradleTestsPlugin : Plugin<Project> {
       it.description = "Hook for delegating to '$PUBLISH_TO_BUILD_M2' in all subprojects"
     }
 
-    target.rootProject.tasks.named(PUBLISH_TO_BUILD_M2).dependsOn(publishToBuildM2)
+    if (!target.isRootProject()) {
+      target.rootProject.tasks.named(PUBLISH_TO_BUILD_M2).dependsOn(publishToBuildM2)
+    }
   }
 
   private fun Project.javaSourceSet(name: String): SourceSet {

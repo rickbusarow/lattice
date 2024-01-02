@@ -98,11 +98,15 @@ public abstract class BaseKotlinConventionPlugin : Plugin<Project> {
 
         options.allWarningsAsErrors.set(extension.allWarningsAsErrors.orElse(false))
 
-        val kotlinMajor = target.latticeProperties.kotlin.apiLevel.get()
-        languageVersion = kotlinMajor
-        apiVersion = kotlinMajor
-
-        (this as? KotlinJvmOptions)?.jvmTarget = target.latticeProperties.java.jvmTarget.get()
+        val kotlinMajor = target.latticeProperties.kotlin.apiLevel.orNull
+        if (kotlinMajor != null) {
+          languageVersion = kotlinMajor
+          apiVersion = kotlinMajor
+        }
+        val jvmTarget = target.latticeProperties.java.jvmTarget.orNull
+        if (jvmTarget != null) {
+          (this as? KotlinJvmOptions)?.jvmTarget = jvmTarget
+        }
 
         @Suppress("SpellCheckingInspection")
         freeCompilerArgs += buildList {

@@ -33,7 +33,7 @@ internal fun Project.addTasksToStartParameter(taskNames: Iterable<String>) {
     // val buildId = (project as ProjectInternal).identityPath
     @Suppress("UnstableApiUsage")
     val buildId = project.buildTreePath
-    val absoluteTaskPaths = taskNames.map { "$buildId:$it" }
+    val absoluteTaskPaths = taskNames.map { "$buildId${it.prefixIfNot(":")}" }
     rootBuild.startParameter.setTaskNames(
       rootBuild.startParameter.taskNames.toSet() + absoluteTaskPaths
     )

@@ -170,11 +170,6 @@ dependencies {
   testImplementation(libs.kotest.assertions.shared)
 }
 
-// val GITHUB_OWNER: String by project
-// val DEVELOPER_URL: String by project
-// val DEVELOPER_NAME: String by project
-// val GITHUB_OWNER_REPO: String by project
-
 fun PluginDeclaration.tags(vararg v: String) {
   @Suppress("UnstableApiUsage")
   tags.set(v.toList())

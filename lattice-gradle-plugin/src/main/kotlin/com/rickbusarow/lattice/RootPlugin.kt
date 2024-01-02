@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rick Busarow
+ * Copyright (C) 2024 Rick Busarow
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,9 +17,7 @@ package com.rickbusarow.lattice
 
 import com.rickbusarow.kgx.checkProjectIsRoot
 import com.rickbusarow.kgx.inCI
-import com.rickbusarow.kgx.internal.InternalGradleApiAccess
 import com.rickbusarow.kgx.isRealRootProject
-import com.rickbusarow.lattice.composite.CompositePlugin
 import com.rickbusarow.lattice.conventions.BenManesVersionsPlugin
 import com.rickbusarow.lattice.conventions.DokkaVersionArchivePlugin
 import com.rickbusarow.lattice.conventions.GitHubReleasePlugin
@@ -57,8 +55,8 @@ public abstract class RootPlugin @Inject constructor() : BaseModulePlugin() {
     }
 
     if (target.gradle.includedBuilds.isNotEmpty()) {
-      @OptIn(InternalGradleApiAccess::class)
-      target.plugins.apply(CompositePlugin::class.java)
+      // @OptIn(InternalGradleApiAccess::class)
+      // target.plugins.apply(CompositePlugin::class.java)
     }
 
     if (inCI() && target.isRealRootProject()) {

@@ -86,10 +86,6 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
 
         sourceSet.sourceLink { sourceLinkBuilder ->
 
-          println(
-            "############# inside -- ${sourceSet.name}  ---  github url ->  ${gitHubSubExtension.url.orNull}"
-          )
-
           sourceLinkBuilder.localDirectory.set(target.file("src/${sourceSet.name}"))
 
           val modulePath = target.path.replace(":", "/")
@@ -100,8 +96,6 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
             gitHubSubExtension.url
               .map(::URI)
               .zip(gitHubSubExtension.defaultBranch) { uri, branch ->
-
-                println("############# ${sourceSet.name} -- $uri -- $branch")
 
                 uri.resolve("blob/$branch/$modulePath/src/${sourceSet.name}")
               }
@@ -204,9 +198,8 @@ public abstract class DokkatooConventionPlugin : Plugin<Project> {
           }
         }
 
-      target.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).dependsOn(
-        checkJavadocJarIsNotVersioned
-      )
+      target.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME)
+        .dependsOn(checkJavadocJarIsNotVersioned)
     }
   }
 

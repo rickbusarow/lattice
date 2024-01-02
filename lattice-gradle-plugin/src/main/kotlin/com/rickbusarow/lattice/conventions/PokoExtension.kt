@@ -38,27 +38,30 @@ public interface PokoExtension {
 
   @Suppress("UndocumentedPublicFunction")
   public fun Project.poko() {
+    // Poko adds its annotation artifact as 'implementation', which is unnecessary.
+    // Replace it with a 'compileOnly' dependency.
 
-    val implementation = configurations.getByName("implementation")
-
-    val annotationsProvider = latticeProperties.versions.poko.map {
+    val annotationProvider = latticeProperties.versions.poko.map {
       dependencies.create("${Modules.`drewHamilton-poko-annotations`}:$it")
         as ExternalModuleDependency
     }
 
-    project.buildscript.dependencies.addProvider("classpath", annotationsProvider)
+    val removeImplementation = lazy<Unit> {
+      val dep = annotationProvider.get()
+      val implementation = configurations.getByName("implementation")
+      implementation.dependencies.remove(dep)
+    }
 
-    val (annotationsGroup, annotationsName) =
-      Modules.`drewHamilton-poko-annotations`.split(':')
-
-    // Poko adds its annotation artifact as 'implementation', which is unnecessary.
-    // Replace it with a 'compileOnly' dependency.
-    implementation.exclude(mapOf("group" to annotationsGroup, "module" to annotationsName))
+    project.buildscript.dependencies.addProvider("classpath", annotationProvider)
 
     javaExtension.sourceSets.configureEach { sourceSet ->
-      val compileOnly = configurations.getByName(sourceSet.compileOnlyConfigurationName)
 
-      compileOnly.dependencies.addLater(annotationsProvider)
+      removeImplementation.value
+
+      configurations
+        .getByName(sourceSet.compileOnlyConfigurationName)
+        .dependencies
+        .addLater(annotationProvider)
     }
 
     pluginManager.apply(PluginIds.`drewHamilton-poko`)

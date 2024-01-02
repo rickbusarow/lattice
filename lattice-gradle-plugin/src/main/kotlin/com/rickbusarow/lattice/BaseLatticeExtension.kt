@@ -24,6 +24,7 @@ import com.rickbusarow.lattice.conventions.DefaultHasGitHubSubExtension
 import com.rickbusarow.lattice.conventions.DefaultHasJavaSubExtension
 import com.rickbusarow.lattice.conventions.DefaultHasKotlinJvmSubExtension
 import com.rickbusarow.lattice.conventions.DefaultHasKotlinSubExtension
+import com.rickbusarow.lattice.conventions.GradleTestsExtension
 import com.rickbusarow.lattice.conventions.HasGitHubSubExtension
 import com.rickbusarow.lattice.conventions.HasJavaSubExtension
 import com.rickbusarow.lattice.conventions.HasKotlinJvmSubExtension
@@ -106,7 +107,8 @@ public abstract class KotlinJvmModuleExtension @Inject constructor(
   BuildLogicShadowExtensionHook,
   KspExtension,
   PokoExtension,
-  SerializationExtension
+  SerializationExtension,
+  GradleTestsExtension
 
 public abstract class KotlinMultiplatformModuleExtension @Inject constructor(
   target: Project,
